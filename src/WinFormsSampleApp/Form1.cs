@@ -18,7 +18,7 @@ public partial class Form1 : Form
         {
             fontComboBox.Items.Add(font.Name);
         }
-        // Default values before the SelectionChanged eventa triggers
+        // Set default values before the SelectionChanged events triggers
         fontComboBox.Text = richTextBoxEx1.Font.Name;
         fontSizeComboBox.Text = richTextBoxEx1.Font.SizeInPoints.ToString();
         _updateFont = true;
@@ -397,6 +397,7 @@ public partial class Form1 : Form
             {
                 richTextBoxEx1.SelectionFontStretch = (float)fontStretch;
             }
+            richTextBoxEx1_SelectionChanged(sender, e);
         }
     }
 
@@ -495,6 +496,7 @@ public partial class Form1 : Form
         var dlg = new ParagraphFormatDialog();
         if (dlg.ShowDialog(this) == DialogResult.OK)
         {
+            richTextBoxEx1_SelectionChanged(sender, e);
         }
     }
 
