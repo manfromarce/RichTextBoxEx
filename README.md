@@ -15,8 +15,11 @@ An improved RichTextBox for Windows Forms (C#) which exposes additional features
 	- **SelectionListType**: get/set list type (none, bullets, numbers, letters, roman numbers)
 	- **SelectionListNumberStyle**: get/set style for numbered list items (plain number or number and dot/right parenthesis/double parenthesis)
 	- **SelectionListStartingNumber**: get/set starting number for numbered list items (1 by default)
-	- **SelectionBulletIndent**: get/set bullet indent for list items
-	- **SelectionBulletTextDistance**: get/set bullet-text distance for list items
+	- **SelectionBulletIndent**: get/set bullet indent for list items, in twips (1/1440 inches = 1/20 points)
+	- **SelectionBulletTextDistance**: get/set bullet-text distance for list items, in twips
+	- **SelectionParagraphSpaceBefore**: get/set space before paragraphs in twips
+	- **SelectionParagraphSpaceAfter**: get/set space after paragraphs in twips
+	- **SelectionLineSpacingRule** and **SelectionLineSpacing**: get/set line spacing
 	- **SelectionHyperlinkUrl**: get/set URL for a "friendly" hyperlink which can have any display text. Setting this property to an empty string removes the hyperlink. AutoDetectUrl should be set on false when using RichTextBoxEx.
 * Additional features:
 	- **InsertImage**: inserts an image from file path or byte array without using the clipboard
