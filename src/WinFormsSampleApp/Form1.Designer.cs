@@ -56,6 +56,7 @@ partial class Form1
         this.tableButton = new ToolStripButton();
         this.hyperlinkButton = new ToolStripButton();
         this.dateTimeButton = new ToolStripButton();
+        this.toolStripButton1 = new ToolStripButton();
         this.richTextBoxEx1 = new RichTextBoxEx.RichTextBoxEx();
         this.printDocument1 = new System.Drawing.Printing.PrintDocument();
         this.pageSetupDialog1 = new PageSetupDialog();
@@ -112,7 +113,7 @@ partial class Form1
         // 
         this.toolStrip1.GripStyle = ToolStripGripStyle.Hidden;
         this.toolStrip1.ImageScalingSize = new Size(20, 20);
-        this.toolStrip1.Items.AddRange(new ToolStripItem[] { this.fontComboBox, this.fontSizeComboBox, this.boldButton, this.italicButton, this.underlineButton, this.strikethroughButton, this.superScriptButton, this.subscriptButton, this.fontColorPicker, this.textHighlightColorPicker, this.fontOptionsButton, this.toolStripSeparator1, this.alignLeftButton, this.alignCenterButton, this.alignRightButton, this.alignJustifiedButton, this.bulletedListButton, this.numberedListButton, this.outdentButton, this.indentButton, this.paragraphOptionsButton, this.toolStripSeparator2, this.imageButton, this.tableButton, this.hyperlinkButton, this.dateTimeButton });
+        this.toolStrip1.Items.AddRange(new ToolStripItem[] { this.fontComboBox, this.fontSizeComboBox, this.boldButton, this.italicButton, this.underlineButton, this.strikethroughButton, this.superScriptButton, this.subscriptButton, this.fontColorPicker, this.textHighlightColorPicker, this.fontOptionsButton, this.toolStripSeparator1, this.alignLeftButton, this.alignCenterButton, this.alignRightButton, this.alignJustifiedButton, this.bulletedListButton, this.numberedListButton, this.outdentButton, this.indentButton, this.paragraphOptionsButton, this.toolStripSeparator2, this.imageButton, this.tableButton, this.hyperlinkButton, this.dateTimeButton, this.toolStripButton1 });
         this.toolStrip1.Location = new Point(0, 28);
         this.toolStrip1.Name = "toolStrip1";
         this.toolStrip1.Size = new Size(1149, 28);
@@ -397,6 +398,16 @@ partial class Form1
         this.dateTimeButton.Text = "Insert date and time";
         this.dateTimeButton.Click += dateTimeButton_Click;
         // 
+        // toolStripButton1
+        // 
+        this.toolStripButton1.DisplayStyle = ToolStripItemDisplayStyle.Text;
+        this.toolStripButton1.ImageTransparentColor = Color.Magenta;
+        this.toolStripButton1.Name = "toolStripButton1";
+        this.toolStripButton1.Size = new Size(30, 25);
+        this.toolStripButton1.Text = "√x";
+        this.toolStripButton1.ToolTipText = "Insert a math formula";
+        this.toolStripButton1.Click += toolStripButton1_Click;
+        // 
         // richTextBoxEx1
         // 
         this.richTextBoxEx1.DetectUrls = false;
@@ -408,6 +419,25 @@ partial class Form1
         this.richTextBoxEx1.Name = "richTextBoxEx1";
         this.richTextBoxEx1.PrintDocument = this.printDocument1;
         this.richTextBoxEx1.RequireCtrlForLinkClick = false;
+        this.richTextBoxEx1.SelectionBulletIndent = 0;
+        this.richTextBoxEx1.SelectionBulletTextDistance = (ushort)0;
+        this.richTextBoxEx1.SelectionCapStyle = RichTextBoxEx.RichTextCapStyle.Standard;
+        this.richTextBoxEx1.SelectionFontName = "Segoe UI";
+        this.richTextBoxEx1.SelectionFontSize = 9F;
+        this.richTextBoxEx1.SelectionFontStretch = 0F;
+        this.richTextBoxEx1.SelectionHyperlinkDisplayText = "";
+        this.richTextBoxEx1.SelectionHyperlinkUrl = "";
+        this.richTextBoxEx1.SelectionIsBold = false;
+        this.richTextBoxEx1.SelectionIsItalic = false;
+        this.richTextBoxEx1.SelectionIsStrikethrough = false;
+        this.richTextBoxEx1.SelectionListNumberStyle = RichTextBoxEx.RichTextListNumberStyle.RightParenthesis;
+        this.richTextBoxEx1.SelectionListStartingNumber = (ushort)0;
+        this.richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.None;
+        this.richTextBoxEx1.SelectionScriptStyle = RichTextBoxEx.RichTextScriptStyle.Normal;
+        this.richTextBoxEx1.SelectionShadow = false;
+        this.richTextBoxEx1.SelectionTextAlignment = RichTextBoxEx.TextAlignment.Left;
+        this.richTextBoxEx1.SelectionUnderlineColor = RichTextBoxEx.RichTextUnderlineColor.TextColor;
+        this.richTextBoxEx1.SelectionUnderlineStyle = RichTextBoxEx.RichTextUnderlineStyle.None;
         this.richTextBoxEx1.ShowSelectionMargin = true;
         this.richTextBoxEx1.Size = new Size(1149, 394);
         this.richTextBoxEx1.TabIndex = 1;
@@ -656,7 +686,7 @@ partial class Form1
         // 
         this.zoomToolStripMenuItem.DropDownItems.AddRange(new ToolStripItem[] { this.zoomInToolStripMenuItem, this.zoomOutToolStripMenuItem, this.restore100ToolStripMenuItem });
         this.zoomToolStripMenuItem.Name = "zoomToolStripMenuItem";
-        this.zoomToolStripMenuItem.Size = new Size(224, 26);
+        this.zoomToolStripMenuItem.Size = new Size(165, 26);
         this.zoomToolStripMenuItem.Text = "Zoom";
         // 
         // zoomInToolStripMenuItem
@@ -683,12 +713,12 @@ partial class Form1
         // toolStripSeparator7
         // 
         this.toolStripSeparator7.Name = "toolStripSeparator7";
-        this.toolStripSeparator7.Size = new Size(221, 6);
+        this.toolStripSeparator7.Size = new Size(162, 6);
         // 
         // wordWrapToolStripMenuItem
         // 
         this.wordWrapToolStripMenuItem.Name = "wordWrapToolStripMenuItem";
-        this.wordWrapToolStripMenuItem.Size = new Size(224, 26);
+        this.wordWrapToolStripMenuItem.Size = new Size(165, 26);
         this.wordWrapToolStripMenuItem.Text = "Word wrap";
         this.wordWrapToolStripMenuItem.Click += wordWrapToolStripMenuItem_Click;
         // 
@@ -851,4 +881,5 @@ partial class Form1
     private ToolStripMenuItem restore100ToolStripMenuItem;
     private ToolStripSeparator toolStripSeparator7;
     private ToolStripMenuItem wordWrapToolStripMenuItem;
+    private ToolStripButton toolStripButton1;
 }

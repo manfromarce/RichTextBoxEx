@@ -99,6 +99,7 @@ public class RichTextBoxEx : RichTextBox
         Multiline = true;
         DetectUrls = false;
         HideSelection = false;
+        AcceptsTab = true;        
         ShowSelectionMargin = true;
     }
 
@@ -488,6 +489,100 @@ public class RichTextBoxEx : RichTextBox
     #region Paragraph formatting
 
     /// <summary>
+    /// Gets or sets the space before the current paragraph in twips (1/1440 inches = 1/20 points).
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public int SelectionParagraphSpaceBefore
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEBEFORE;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return pf.dySpaceBefore;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEBEFORE;
+            pf.dySpaceBefore = value;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the space after the current paragraph in twips (1/1440 inches = 1/20 points).
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public int SelectionParagraphSpaceAfter
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEAFTER;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return pf.dySpaceAfter;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEAFTER;
+            pf.dySpaceAfter = value;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the line spacing rule for the current paragraph.
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public RichTextLineSpacingRule SelectionLineSpacingRule
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return (RichTextLineSpacingRule)pf.bLineSpacingRule;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
+            pf.bLineSpacingRule = (byte)value;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+
+    /// <summary>
+    /// Gets or sets the line spacing for the current paragraph.
+    /// This value is interpreted based on the SelectionLineSpacingRule property.
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public int SelectionLineSpacing
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return pf.dyLineSpacing;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
+            pf.dyLineSpacing = value;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+    /// <summary>
     /// Gets or sets the list type (none, bulleted, numbered, letter-numbered) for the current selection or insertion point.
     /// </summary>
     [Browsable(false)]
@@ -514,6 +609,12 @@ public class RichTextBoxEx : RichTextBox
             {
                 pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING;
                 pf.Base.wNumbering = (PARAFORMAT_NUMBERING)value;
+                if ((int)value >= 2)
+                {
+                    // 1 is the first number by default
+                    // (can be changed by setting SelectionListStartingNumber after activating the numbered list)
+                    pf.wNumberingStart = 1; 
+                }
             }
             SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
         }
@@ -567,7 +668,8 @@ public class RichTextBoxEx : RichTextBox
     }
 
     /// <summary>
-    /// Gets or sets bullet indent for list items containing the current selection or insertion point.
+    /// Gets or sets bullet indent (in twips = 1/1440 inches = 1/20 points) 
+    /// for list items containing the current selection or insertion point.
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -590,7 +692,8 @@ public class RichTextBoxEx : RichTextBox
     }
 
     /// <summary>
-    /// Gets or sets bullet-text distance for list items containing the current selection or insertion point.
+    /// Gets or sets bullet-text distance (in twips = 1/1440 inches = 1/20 points) 
+    /// for list items containing the current selection or insertion point.
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -1139,6 +1242,21 @@ public class RichTextBoxEx : RichTextBox
         selection.GetPara2(out ITextPara2 paragraph);
         return paragraph;
     }
+
+    //[SupportedOSPlatform("windows10.0")]
+    //public void InsertMath(string math)
+    //{
+    //    var range = GetSelectedTextRange();
+    //    if (range != null)
+    //    {
+    //        unsafe
+    //        {
+    //            var ptr = Marshal.StringToBSTR(math);
+    //            range.SetText((BSTR)ptr);
+    //        }
+    //        range.BuildUpMath(1);
+    //    }
+    //}
 
     #endregion
 

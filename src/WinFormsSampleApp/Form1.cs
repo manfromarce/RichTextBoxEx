@@ -250,12 +250,12 @@ public partial class Form1 : Form
     {
         if (underlineButton.Checked)
         {
-            richTextBoxEx1.SelectionUnderlineStyle = RichTextBoxEx.RichTextUnderlineStyle.None;
+            richTextBoxEx1.SelectionUnderlineStyle = RichTextUnderlineStyle.None;
             underlineButton.Checked = false;
         }
         else
         {
-            richTextBoxEx1.SelectionUnderlineStyle = RichTextBoxEx.RichTextUnderlineStyle.Single;
+            richTextBoxEx1.SelectionUnderlineStyle = RichTextUnderlineStyle.Single;
             underlineButton.Checked = true;
         }
     }
@@ -278,12 +278,12 @@ public partial class Form1 : Form
     {
         if (superScriptButton.Checked)
         {
-            richTextBoxEx1.SelectionScriptStyle = RichTextBoxEx.RichTextScriptStyle.Normal;
+            richTextBoxEx1.SelectionScriptStyle = RichTextScriptStyle.Normal;
             superScriptButton.Checked = false;
         }
         else
         {
-            richTextBoxEx1.SelectionScriptStyle = RichTextBoxEx.RichTextScriptStyle.Superscript;
+            richTextBoxEx1.SelectionScriptStyle = RichTextScriptStyle.Superscript;
             superScriptButton.Checked = true;
             subscriptButton.Checked = false;
         }
@@ -349,7 +349,7 @@ public partial class Form1 : Form
         var capStyle = richTextBoxEx1.SelectionCapStyle;
         dlg.checkBoxAllCaps.Checked = capStyle == RichTextCapStyle.AllCaps;
         dlg.checkBoxSmallCaps.Checked = capStyle == RichTextCapStyle.SmallCaps;
-        var scriptStyle = richTextBoxEx1.SelectionScriptStyle;        
+        var scriptStyle = richTextBoxEx1.SelectionScriptStyle;
         dlg.checkBoxSuperscript.Checked = scriptStyle == RichTextScriptStyle.Superscript;
         dlg.checkBoxSubscript.Checked = scriptStyle == RichTextScriptStyle.Subscript;
 
@@ -461,6 +461,7 @@ public partial class Form1 : Form
         {
             richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.Bullet;
             bulletedListButton.Checked = true;
+            numberedListButton.Checked = false;
         }
     }
 
@@ -475,6 +476,7 @@ public partial class Form1 : Form
         {
             richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.Number;
             numberedListButton.Checked = true;
+            bulletedListButton.Checked = false;
         }
     }
 
@@ -494,8 +496,68 @@ public partial class Form1 : Form
     private void ParagraphOptionsButton_Click(object sender, EventArgs e)
     {
         var dlg = new ParagraphFormatDialog();
+
+        dlg.alignmentComboBox.SelectedIndex = (int)richTextBoxEx1.SelectionTextAlignment - 1;
+
+        dlg.leftIndentUpDown.Value = richTextBoxEx1.SelectionIndent;
+        dlg.rightIndentUpDown.Value = richTextBoxEx1.SelectionRightIndent;
+        dlg.firstLineIndentUpDown.Value = richTextBoxEx1.SelectionHangingIndent;
+
+        // Convert twips to points
+        dlg.spaceBeforeUpDown.Value = richTextBoxEx1.SelectionParagraphSpaceBefore / 20;
+        dlg.spaceAfterUpDown.Value = richTextBoxEx1.SelectionParagraphSpaceAfter / 20;
+
+        var lineSpacingRule = richTextBoxEx1.SelectionLineSpacingRule;
+        // Convert to points or lines (depending on LineSpacingRule,
+        // see bLineSpacingRule on https://learn.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-paraformat2#members)
+        var lineSpacing = richTextBoxEx1.SelectionLineSpacing / 20;
+        dlg.spacingRuleComboBox.SelectedIndex = (int)lineSpacingRule;
+        dlg.lineSpacingValueUpDown.Value = lineSpacing;
+        //switch (lineSpacingRule)
+        //{
+        //    case RichTextLineSpacingRule.Minimum:
+        //    case RichTextLineSpacingRule.Exact:
+        //        dlg.lineSpacingValueUpDown.Value = lineSpacing;
+        //        break;
+        //    case RichTextLineSpacingRule.Multiple:
+        //        dlg.lineSpacingValueUpDown.Value = lineSpacing;
+        //        break;
+        //}
+
+        dlg.tabsComboBox.Items.AddRange(richTextBoxEx1.SelectionTabs.Cast<object>().ToArray());
+
+        dlg.listTypeComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListType, 0, 6);
+        dlg.numberStyleComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListNumberStyle, 0, 3);
+        dlg.firstNumberUpDown.Value = richTextBoxEx1.SelectionListStartingNumber;
+        // Convert twips to points
+        dlg.bulletIndentUpDown.Value = richTextBoxEx1.SelectionBulletIndent / 20;
+        dlg.bulletTextDistanceUpDown.Value = richTextBoxEx1.SelectionBulletTextDistance / 20;
+
         if (dlg.ShowDialog(this) == DialogResult.OK)
         {
+            var alignment = dlg.alignmentComboBox.SelectedIndex + 1;
+
+            var leftIndent = (int)dlg.leftIndentUpDown.Value;
+            var rightIndent = (int)dlg.rightIndentUpDown.Value;
+            var firstLineIndent = (int)dlg.firstLineIndentUpDown.Value;
+
+            var spaceBefore = (int)(dlg.spaceBeforeUpDown.Value * 20);
+            var spaceAfter = (int)(dlg.spaceAfterUpDown.Value * 20);
+
+            var lineSpacingRule2 = dlg.spacingRuleComboBox.SelectedIndex;
+            var lineSpacing2 = (int)(dlg.lineSpacingValueUpDown.Value * 20);
+
+            //var tabs = dlg.tabsComboBox.Items.OfType<object>().Select(x => int.
+
+            var listType = dlg.listTypeComboBox.SelectedIndex;
+            var numberStyle = dlg.numberStyleComboBox.SelectedIndex;
+            var firstNumber = dlg.firstNumberUpDown.Value;
+            var bulletIndent = (int)(dlg.bulletIndentUpDown.Value * 20);
+            var bulletTextDistance = (int)(dlg.bulletTextDistanceUpDown.Value * 20);
+
+            if (dlg.defaultSettingsCheckBox.Checked)
+            {
+            }
             richTextBoxEx1_SelectionChanged(sender, e);
         }
     }
@@ -504,26 +566,26 @@ public partial class Form1 : Form
     {
         boldButton.Checked = richTextBoxEx1.SelectionIsBold;
         italicButton.Checked = richTextBoxEx1.SelectionIsItalic;
-        underlineButton.Checked = richTextBoxEx1.SelectionUnderlineStyle != RichTextBoxEx.RichTextUnderlineStyle.None;
+        underlineButton.Checked = richTextBoxEx1.SelectionUnderlineStyle != RichTextUnderlineStyle.None;
         strikethroughButton.Checked = richTextBoxEx1.SelectionIsStrikethrough;
 
         var scriptStyle = richTextBoxEx1.SelectionScriptStyle;
-        superScriptButton.Checked = scriptStyle == RichTextBoxEx.RichTextScriptStyle.Superscript;
-        subscriptButton.Checked = scriptStyle == RichTextBoxEx.RichTextScriptStyle.Subscript;
+        superScriptButton.Checked = scriptStyle == RichTextScriptStyle.Superscript;
+        subscriptButton.Checked = scriptStyle == RichTextScriptStyle.Subscript;
 
         var alignment = richTextBoxEx1.SelectionTextAlignment;
-        alignLeftButton.Checked = alignment == RichTextBoxEx.TextAlignment.Left;
-        alignCenterButton.Checked = alignment == RichTextBoxEx.TextAlignment.Center;
-        alignRightButton.Checked = alignment == RichTextBoxEx.TextAlignment.Right;
-        alignJustifiedButton.Checked = alignment == RichTextBoxEx.TextAlignment.Justify;
+        alignLeftButton.Checked = alignment == TextAlignment.Left;
+        alignCenterButton.Checked = alignment == TextAlignment.Center;
+        alignRightButton.Checked = alignment == TextAlignment.Right;
+        alignJustifiedButton.Checked = alignment == TextAlignment.Justify;
 
         var listType = richTextBoxEx1.SelectionListType;
-        bulletedListButton.Checked = listType == RichTextBoxEx.RichTextListType.Bullet;
-        numberedListButton.Checked = (listType == RichTextBoxEx.RichTextListType.Number ||
-                                      listType == RichTextBoxEx.RichTextListType.LowerCaseLetter ||
-                                      listType == RichTextBoxEx.RichTextListType.UpperCaseLetter ||
-                                      listType == RichTextBoxEx.RichTextListType.LowerCaseRoman ||
-                                      listType == RichTextBoxEx.RichTextListType.UpperCaseRoman);
+        bulletedListButton.Checked = listType == RichTextListType.Bullet;
+        numberedListButton.Checked = (listType == RichTextListType.Number ||
+                                      listType == RichTextListType.LowerCaseLetter ||
+                                      listType == RichTextListType.UpperCaseLetter ||
+                                      listType == RichTextListType.LowerCaseRoman ||
+                                      listType == RichTextListType.UpperCaseRoman);
 
         _updateFont = false;
         fontComboBox.Text = richTextBoxEx1.SelectionFontName;
@@ -659,6 +721,11 @@ public partial class Form1 : Form
     private void restore100ToolStripMenuItem_Click(object sender, EventArgs e)
     {
         richTextBoxEx1.ZoomFactor = 1;
+    }
+
+    private void toolStripButton1_Click(object sender, EventArgs e)
+    {
+        //richTextBoxEx1.InsertMath(@"\frac{a}{b}");
     }
 }
 
