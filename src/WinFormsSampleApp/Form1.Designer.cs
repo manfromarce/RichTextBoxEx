@@ -363,6 +363,7 @@ partial class Form1
         this.imageButton.Name = "imageButton";
         this.imageButton.Size = new Size(29, 25);
         this.imageButton.Text = "Insert image";
+        this.imageButton.ToolTipText = "Insert image from file";
         this.imageButton.Click += imageButton_Click;
         // 
         // tableButton
@@ -383,6 +384,7 @@ partial class Form1
         this.hyperlinkButton.Name = "hyperlinkButton";
         this.hyperlinkButton.Size = new Size(29, 25);
         this.hyperlinkButton.Text = "Insert hyperlink";
+        this.hyperlinkButton.ToolTipText = "Insert, edit or remove hyperlink";
         this.hyperlinkButton.Click += hyperlinkButton_Click;
         // 
         // dateTimeButton

@@ -547,11 +547,11 @@ public partial class Form1 : Form
 
     private void hyperlinkButton_Click(object sender, EventArgs e)
     {
-        // This dialog aims to provide a Microsoft Word-like behavior.
         string displayText = richTextBoxEx1.SelectionHyperlinkDisplayText;
         if (displayText == string.Empty)
         {
-            // If there is no hyperlink, the currently selected text (if any) is suggested
+            // If there is no hyperlink, the currently selected text (if any) is suggested.
+            // If there is an existing hyperlink, SelectedVisibleText should be used rather than SelectedText (which would contain hidden RTF parts).
             displayText = richTextBoxEx1.SelectedVisibleText;
         }
         var dlg = new InsertHyperlinkDialog()
@@ -559,26 +559,14 @@ public partial class Form1 : Form
             LinkDisplayText = displayText,
             LinkUrl = richTextBoxEx1.SelectionHyperlinkUrl,
         };
+        // Enable button to remove the existing hyperlink, if any.
+        dlg.removeButton.Enabled = !string.IsNullOrWhiteSpace(dlg.LinkUrl);
         if (dlg.ShowDialog(this) == DialogResult.OK)
         {
-            // When changing SelectedText, the selection is cleared so we need to restore it before calling SelectionLink
-            //int selectionStart = richTextBoxEx1.SelectionStart;
-            //int selectionLength = richTextBoxEx1.SelectionLength;
-            //richTextBoxEx1.SelectedText = dlg.LinkDisplayText;
-            //richTextBoxEx1.SelectionStart = selectionStart;
-            //richTextBoxEx1.SelectionLength = dlg.LinkDisplayText.Length;
-
-            // Display text should be set before URL, because in case the user sets URL to an empty string
-            // the hyperlink is removed and SelectionHyperlinkDisplayText would no longer work
-            // (SelectedText should be used in that case)
+            // Display text should be set before URL, because in case the hyperlink is removed,
+            // SelectionHyperlinkDisplayText would no longer work (SelectedText should be used in that case).
             richTextBoxEx1.SelectionHyperlinkDisplayText = dlg.LinkDisplayText;
             richTextBoxEx1.SelectionHyperlinkUrl = dlg.LinkUrl;
-
-            //if (selectionLength > 0)
-            //{
-            //    // If selection was collapsed to caret, clear it again.
-            //    richTextBoxEx1.SelectionLength = 0;
-            //}
         }
     }
 

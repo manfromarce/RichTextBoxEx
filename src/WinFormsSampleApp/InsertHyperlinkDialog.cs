@@ -42,9 +42,10 @@ public partial class InsertHyperlinkDialog : Form
 
     private void okButton_Click(object sender, EventArgs e)
     {
-        if (string.IsNullOrWhiteSpace(displayTextBox.Text))
+        if (string.IsNullOrWhiteSpace(displayTextBox.Text) ||
+            string.IsNullOrWhiteSpace(urlTextBox.Text))
         {
-            MessageBox.Show("Display text is required.");
+            MessageBox.Show("Display text and URL cannot be empty.");
             return;
         }
         this.DialogResult = DialogResult.OK;
@@ -57,12 +58,13 @@ public partial class InsertHyperlinkDialog : Form
         this.Close();
     }
 
-    // Emulates the Microsoft Word behavior
-    // (if display text is blank, suggest the URL as display text until the user changes it)
-    bool autoDisplayText = true;
+    //If display text is blank, suggest the URL as display text until the user changes it)
+    //bool autoDisplayText = true;
 
     private void urlTextBox_TextChanged(object sender, EventArgs e)
     {
+        okButton.Enabled = (!string.IsNullOrWhiteSpace(urlTextBox.Text)) &&
+                           (!string.IsNullOrWhiteSpace(displayTextBox.Text));
         if (displayTextBox.Text == string.Empty)
         {
             displayTextBox.Text = urlTextBox.Text;
@@ -71,6 +73,15 @@ public partial class InsertHyperlinkDialog : Form
 
     private void displayTextBox_TextChanged(object sender, EventArgs e)
     {
-        autoDisplayText = false;
+        okButton.Enabled = (!string.IsNullOrWhiteSpace(urlTextBox.Text)) &&
+                   (!string.IsNullOrWhiteSpace(displayTextBox.Text));
+        //autoDisplayText = false;
+    }
+
+    private void button1_Click(object sender, EventArgs e)
+    {
+        LinkUrl = ""; // handled by RichTextBoxEx
+        this.DialogResult = DialogResult.OK;
+        this.Close();
     }
 }

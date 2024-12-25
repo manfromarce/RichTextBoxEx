@@ -710,13 +710,13 @@ public class RichTextBoxEx : RichTextBox
         set
         {
             var range = GetSelectedTextRange();
-            ((ITextRange)range).Expand((int)tomConstants.tomLink, out int delta);
+            range.Expand((int)tomConstants.tomLink, out int delta);
             if (range != null && !string.IsNullOrEmpty(value))
             {
                 unsafe
                 {
                     var ptr = Marshal.StringToBSTR(value);
-                    range.SetURL((BSTR)ptr);
+                    range.SetText((BSTR)ptr);
                 }
             }
         }

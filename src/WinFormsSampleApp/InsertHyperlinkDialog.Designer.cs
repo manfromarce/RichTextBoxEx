@@ -34,6 +34,7 @@ partial class InsertHyperlinkDialog
         this.label2 = new Label();
         this.displayTextBox = new TextBox();
         this.urlTextBox = new TextBox();
+        this.removeButton = new Button();
         SuspendLayout();
         // 
         // cancelButton
@@ -50,6 +51,7 @@ partial class InsertHyperlinkDialog
         // okButton
         // 
         this.okButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        this.okButton.Enabled = false;
         this.okButton.Location = new Point(347, 130);
         this.okButton.Name = "okButton";
         this.okButton.Size = new Size(94, 29);
@@ -94,6 +96,17 @@ partial class InsertHyperlinkDialog
         this.urlTextBox.TabIndex = 17;
         this.urlTextBox.TextChanged += urlTextBox_TextChanged;
         // 
+        // removeButton
+        // 
+        this.removeButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+        this.removeButton.Location = new Point(12, 130);
+        this.removeButton.Name = "removeButton";
+        this.removeButton.Size = new Size(144, 29);
+        this.removeButton.TabIndex = 18;
+        this.removeButton.Text = "Remove hyperlink";
+        this.removeButton.UseVisualStyleBackColor = true;
+        this.removeButton.Click += button1_Click;
+        // 
         // InsertHyperlinkDialog
         // 
         AcceptButton = this.okButton;
@@ -101,6 +114,7 @@ partial class InsertHyperlinkDialog
         AutoScaleMode = AutoScaleMode.Font;
         CancelButton = this.cancelButton;
         ClientSize = new Size(553, 171);
+        Controls.Add(this.removeButton);
         Controls.Add(this.urlTextBox);
         Controls.Add(this.displayTextBox);
         Controls.Add(this.label2);
@@ -127,4 +141,5 @@ partial class InsertHyperlinkDialog
     private Label label2;
     private TextBox displayTextBox;
     private TextBox urlTextBox;
+    public Button removeButton;
 }
