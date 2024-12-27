@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace RichTextBoxEx;
 
-public enum TextAlignment
+public enum RichTextAlignment
 {
     Left = 1,
     Right = 2,

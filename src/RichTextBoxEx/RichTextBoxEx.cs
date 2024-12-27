@@ -99,7 +99,7 @@ public class RichTextBoxEx : RichTextBox
         Multiline = true;
         DetectUrls = false;
         HideSelection = false;
-        AcceptsTab = true;        
+        AcceptsTab = true;   
         ShowSelectionMargin = true;
     }
 
@@ -161,8 +161,20 @@ public class RichTextBoxEx : RichTextBox
     protected override void OnHandleCreated(EventArgs e)
     {
         base.OnHandleCreated(e);
+
+        // Enable advanced typography
         PInvoke.SendMessage(hwnd, PInvoke.EM_SETTYPOGRAPHYOPTIONS, PInvoke.TO_ADVANCEDTYPOGRAPHY, (int)PInvoke.TO_ADVANCEDTYPOGRAPHY);
+        
+        // Enable math
         PInvoke.SendMessage(hwnd, PInvoke.EM_SETEDITSTYLEEX, PInvoke.SES_EX_NOMATH, 0);
+        
+        // Set 1 as default starting number for lists
+        // (can be changed using SelectionListStartingNumber).
+        var pf = CreateParaFormat2();
+        pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERINGSTART;
+        pf.wNumberingStart = 1;
+        SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        
         if (!base.AutoWordSelection)
         {
             // Fixes a bug with word selection
@@ -208,7 +220,7 @@ public class RichTextBoxEx : RichTextBox
             var cf = CreateCharFormat2();
             cf.Base.dwMask = CFM_MASK.CFM_SIZE;
             var rv = SendMessage(hwnd, PInvoke.EM_GETCHARFORMAT, PInvoke.SCF_SELECTION, ref cf);
-            return cf.Base.yHeight / 20.0f; // yHeight is in twips, convert to points
+            return cf.Base.yHeight / 20.0f; // Convert twips to points
         }
         set
         {
@@ -489,7 +501,99 @@ public class RichTextBoxEx : RichTextBox
     #region Paragraph formatting
 
     /// <summary>
-    /// Gets or sets the space before the current paragraph in twips (1/1440 inches = 1/20 points).
+    /// Gets or sets the alignment (left, center, right or justified) of paragraphs containing the current selection or insertion point.
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public new RichTextAlignment SelectionAlignment
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_ALIGNMENT;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return (RichTextAlignment)pf.Base.wAlignment;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_ALIGNMENT;
+            pf.Base.wAlignment = (PARAFORMAT_ALIGNMENT)value;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+    /// <summary>
+    ///  The distance (in points) between the left edge of the RichTextBox control and
+    ///  the left edge of the selected paragraph(s).
+    /// </summary>
+    public new int SelectionIndent
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_STARTINDENT;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return pf.Base.dxStartIndent / 20;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_STARTINDENT;
+            pf.Base.dxStartIndent = value * 20;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+    /// <summary>
+    ///  The distance (in points) between the right edge of the RichTextBox control and
+    ///  the right edge of the selected paragraph(s).
+    /// </summary>
+    public new int SelectionRightIndent
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_RIGHTINDENT;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return pf.Base.dxRightIndent / 20;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_RIGHTINDENT;
+            pf.Base.dxRightIndent = value * 20;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// The distance (in points) between the left edge of the first line of text
+    /// in the selected paragraph(s) (as specified by the SelectionIndent property)
+    /// and the left edge of subsequent lines of text in the same paragraph(s).
+    /// If the value is negative, the first line should be indented of at least the same amount in order to
+    /// display the subsequent lines as outdented.
+    /// </summary>
+    public new int SelectionHangingIndent
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_OFFSET;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            return pf.Base.dxOffset / 20;
+        }
+        set
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_OFFSET;
+            pf.Base.dxOffset = value * 20;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the space before the current paragraph in typographic points (1/72 of inches).
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -500,19 +604,19 @@ public class RichTextBoxEx : RichTextBox
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEBEFORE;
             SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return pf.dySpaceBefore;
+            return pf.dySpaceBefore / 20;
         }
         set
         {
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEBEFORE;
-            pf.dySpaceBefore = value;
+            pf.dySpaceBefore = value * 20;
             SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
         }
     }
 
     /// <summary>
-    /// Gets or sets the space after the current paragraph in twips (1/1440 inches = 1/20 points).
+    /// Gets or sets the space after the current paragraph in typographic points (1/72 of inches).
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -523,40 +627,16 @@ public class RichTextBoxEx : RichTextBox
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEAFTER;
             SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return pf.dySpaceAfter;
+            return pf.dySpaceAfter / 20;
         }
         set
         {
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEAFTER;
-            pf.dySpaceAfter = value;
+            pf.dySpaceAfter = value * 20;
             SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
         }
     }
-
-    /// <summary>
-    /// Gets or sets the line spacing rule for the current paragraph.
-    /// </summary>
-    [Browsable(false)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public RichTextLineSpacingRule SelectionLineSpacingRule
-    {
-        get
-        {
-            var pf = CreateParaFormat2();
-            pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
-            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return (RichTextLineSpacingRule)pf.bLineSpacingRule;
-        }
-        set
-        {
-            var pf = CreateParaFormat2();
-            pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
-            pf.bLineSpacingRule = (byte)value;
-            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
-        }
-    }
-
 
     /// <summary>
     /// Gets or sets the line spacing for the current paragraph.
@@ -564,23 +644,189 @@ public class RichTextBoxEx : RichTextBox
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public int SelectionLineSpacing
+    public RichTextLineSpacing SelectionLineSpacing
     {
+        // https://learn.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-paraformat2#members
         get
         {
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
             SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return pf.dyLineSpacing;
+            switch (pf.bLineSpacingRule)
+            {
+                case 0:
+                    return new SingleLineSpacing();
+                case 1:
+                    return new OneAndHalfLineSpacing();
+                case 2:
+                    return new DoubleLineSpacing();
+                // For the following case, don't use the public constructor as it expects a value in points,
+                // but set the internal value in twips directly.
+                case 3:
+                    return new MinimumLineSpacing() { SpacingValue = pf.dyLineSpacing };
+                case 4:
+                    return new ExactLineSpacing() { SpacingValue = pf.dyLineSpacing };
+                case 5:
+                    return new MultipleLineSpacing() { SpacingValue = pf.dyLineSpacing };
+                default:
+                    return new SingleLineSpacing();
+            }
         }
         set
         {
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
-            pf.dyLineSpacing = value;
+            pf.bLineSpacingRule = value.SpacingRule;
+            pf.dyLineSpacing = value.SpacingValue;
             SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
         }
     }
+
+    #endregion
+
+    #region Default paragraph formatting
+
+    private int _defaultLeftIndent = 0;
+    private int _defaultRightIndent = 0;
+    private int _defaultHangingIndent = 0;
+    private int _defaultSpaceBefore = 0;
+    private int _defaultSpaceAfter = 0;
+    private RichTextLineSpacing? _defaultLineSpacing = null;
+
+    /// <summary>
+    ///  The default distance (in points) between the left edge of the RichTextBox control and
+    ///  the left edge of new paragraphs.
+    /// </summary>
+    public int DefaultIndent
+    {
+        get
+        {
+            return _defaultLeftIndent;
+        }
+        set
+        {
+            _defaultLeftIndent = value * 20;
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_STARTINDENT;
+            pf.Base.dxStartIndent = _defaultLeftIndent;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        }
+    }
+
+    /// <summary>
+    ///  The default distance (in points) between the right edge of the RichTextBox control and
+    ///  the right edge of new paragraphs.
+    /// </summary>
+    public int DefaultRightIndent
+    {
+        get
+        {
+            return _defaultRightIndent;
+        }
+        set
+        {
+            _defaultRightIndent = value * 20;
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_RIGHTINDENT;
+            pf.Base.dxRightIndent = _defaultRightIndent;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// The default distance (in points) between the left edge of the first line of text
+    /// for new parapraphs (as specified by the SelectionIndent property)
+    /// and the left edge of subsequent lines of text in the same paragraph(s).
+    /// If the value is negative, the first line should be indented of at least the same amount in order to
+    /// display the subsequent lines as outdented.
+    /// </summary>
+    public int DefaultHangingIndent
+    {
+        get
+        {
+            return _defaultHangingIndent;
+        }
+        set
+        {
+            _defaultHangingIndent = value * 20;
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_OFFSET;
+            pf.Base.dxOffset = _defaultHangingIndent;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the default space before paragraphs in typographic points (1/72 of inches).
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public int DefaultParagraphSpaceBefore
+    {
+        get
+        {
+            return _defaultSpaceBefore;
+        }
+        set
+        {
+            _defaultSpaceBefore = value * 20;
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEBEFORE;
+            pf.dySpaceBefore = _defaultSpaceBefore;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the default space after paragraphs in typographic points (1/72 of inches).
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public int DefaultParagraphSpaceAfter
+    {
+        get
+        {
+            return _defaultSpaceAfter;
+        }
+        set
+        {
+            _defaultSpaceAfter = value * 20;
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_SPACEAFTER;
+            pf.dySpaceAfter = _defaultSpaceAfter;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        }
+    }
+   
+    /// <summary>
+    /// Gets or sets the default line spacing for paragraphs.
+    /// This value is interpreted based on the DefaultLineSpacingRule property.
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public RichTextLineSpacing DefaultLineSpacing
+    {
+        get
+        {
+            return _defaultLineSpacing ?? new SingleLineSpacing();
+        }
+        set
+        {
+            _defaultLineSpacing = value;
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_LINESPACING;
+            pf.bLineSpacingRule = value.SpacingRule;
+            pf.dyLineSpacing = value.SpacingValue;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        }
+    }
+
+    #endregion
+
+    #region Lists
+
+    private int _defaultBulletIndent = 0;
+    private ushort _defaultBulletTextDistance = 0;
 
     /// <summary>
     /// Gets or sets the list type (none, bulleted, numbered, letter-numbered) for the current selection or insertion point.
@@ -598,25 +844,26 @@ public class RichTextBoxEx : RichTextBox
         }
         set
         {
-            var pf = CreateParaFormat2();
-            if (value == RichTextListType.None)
+            // Since dxOffset is used for both hanging indent and bullet indent,
+            // avoid unnecessary changes which may produce unexpected indent values
+            // when setting multiple properties (e.g. Paragraph format dialog in the sample app)
+            if (value != SelectionListType)
             {
+                var pf = CreateParaFormat2();
                 pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING | PARAFORMAT_MASK.PFM_OFFSET;
-                pf.Base.wNumbering = 0;
-                pf.Base.dxOffset = 0;
-            }
-            else
-            {
-                pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING;
-                pf.Base.wNumbering = (PARAFORMAT_NUMBERING)value;
-                if ((int)value >= 2)
+                switch (value)
                 {
-                    // 1 is the first number by default
-                    // (can be changed by setting SelectionListStartingNumber after activating the numbered list)
-                    pf.wNumberingStart = 1; 
+                    case RichTextListType.None:
+                        pf.Base.dxOffset = 0;
+                        pf.Base.wNumbering = 0;
+                        break;
+                    default:
+                        pf.Base.dxOffset = _defaultBulletIndent;
+                        pf.Base.wNumbering = (PARAFORMAT_NUMBERING)value;
+                        break;
                 }
+                SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
             }
-            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
         }
     }
 
@@ -644,7 +891,8 @@ public class RichTextBoxEx : RichTextBox
     }
 
     /// <summary>
-    /// Gets or sets the first number of the numbered list starting at the current selection or insertion point (1 by default).
+    /// Gets or sets the first number of the numbered list starting at the current selection or insertion point 
+    /// (1 by default).
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -668,31 +916,7 @@ public class RichTextBoxEx : RichTextBox
     }
 
     /// <summary>
-    /// Gets or sets bullet indent (in twips = 1/1440 inches = 1/20 points) 
-    /// for list items containing the current selection or insertion point.
-    /// </summary>
-    [Browsable(false)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public int SelectionBulletIndent
-    {
-        get
-        {
-            var pf = CreateParaFormat2();            
-            pf.Base.dwMask = PARAFORMAT_MASK.PFM_OFFSET;
-            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return pf.Base.dxOffset;
-        }
-        set
-        {
-            var pf = CreateParaFormat2();
-            pf.Base.dwMask = PARAFORMAT_MASK.PFM_OFFSET;
-            pf.Base.dxOffset = value;
-            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets bullet-text distance (in twips = 1/1440 inches = 1/20 points) 
+    /// Gets or sets bullet-text distance (in points)
     /// for list items containing the current selection or insertion point.
     /// </summary>
     [Browsable(false)]
@@ -704,37 +928,61 @@ public class RichTextBoxEx : RichTextBox
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERINGTAB;
             SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return pf.wNumberingTab;
+            return (ushort)(pf.wNumberingTab / 20);
         }
         set
         {
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERINGTAB;
-            pf.wNumberingTab = value;
+            pf.wNumberingTab = (ushort)(value * 20);
             SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
         }
     }
 
     /// <summary>
-    /// Gets or sets the alignment (left, center, right or justified) of paragraphs containing the current selection or insertion point.
+    /// Gets or sets the default bullet-text distance for new list items (in points).
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public TextAlignment SelectionTextAlignment
+    public ushort DefaultBulletTextDistance
     {
         get
-        {
-            var pf = CreateParaFormat2();
-            pf.Base.dwMask = PARAFORMAT_MASK.PFM_ALIGNMENT;
-            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return (TextAlignment)pf.Base.wAlignment;
+        {            
+            return (ushort)(_defaultBulletTextDistance / 20);
         }
         set
         {
+            _defaultBulletTextDistance = (ushort)(value * 20);
             var pf = CreateParaFormat2();
-            pf.Base.dwMask = PARAFORMAT_MASK.PFM_ALIGNMENT;
-            pf.Base.wAlignment = (PARAFORMAT_ALIGNMENT)value;
-            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERINGTAB;
+            pf.wNumberingTab = _defaultBulletTextDistance;
+            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
+        }
+    }
+
+    /// <summary>
+    /// Gets or sets the default indent for list items (in points), relative to the first paragraph line indent.
+    /// </summary>
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    public new int BulletIndent
+    {
+        get => _defaultBulletIndent;
+        set
+        {
+            _defaultBulletIndent = value;            
+        }
+    }
+
+    public new bool SelectionBullet
+    {
+        get
+        {
+            return SelectionListType != RichTextListType.None;
+        }
+        set 
+        {
+            SelectionListType = value ? RichTextListType.Bullet : RichTextListType.None;
         }
     }
 
@@ -890,7 +1138,7 @@ public class RichTextBoxEx : RichTextBox
     private const int MM_ISOTROPIC = 7; // keep 1:1 aspect ratio
     private const int MM_ANISOTROPIC = 8; // adjust x and y separately
     private const int HMM_PER_INCH = 2540; // himetrics per inch
-    private const int TWIPS_PER_INCH = 1440; // twips per inc
+    private const int TWIPS_PER_INCH = 1440; // twips per inch
 
     /// <summary>
     /// Inserts an image, replacing the current selection if any.
@@ -1254,7 +1502,7 @@ public class RichTextBoxEx : RichTextBox
     //            var ptr = Marshal.StringToBSTR(math);
     //            range.SetText((BSTR)ptr);
     //        }
-    //        range.BuildUpMath(1);
+    //        range.BuildUpMath(0);
     //    }
     //}
 

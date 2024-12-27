@@ -1,4 +1,4 @@
-using System.Diagnostics;
+﻿using System.Diagnostics;
 using System.Runtime.InteropServices;
 using RichTextBoxEx;
 
@@ -411,7 +411,7 @@ public partial class Form1 : Form
             alignJustifiedButton.Checked = false;
         }
         // Set alignment even if button was already checked, as selection could contain multiple alignments.
-        richTextBoxEx1.SelectionTextAlignment = RichTextBoxEx.TextAlignment.Left;
+        richTextBoxEx1.SelectionAlignment = RichTextAlignment.Left;
     }
 
     private void alignCenterButton_Click(object sender, EventArgs e)
@@ -423,7 +423,7 @@ public partial class Form1 : Form
             alignRightButton.Checked = false;
             alignJustifiedButton.Checked = false;
         }
-        richTextBoxEx1.SelectionTextAlignment = RichTextBoxEx.TextAlignment.Center;
+        richTextBoxEx1.SelectionAlignment = RichTextAlignment.Center;
     }
 
     private void alignRightButton_Click(object sender, EventArgs e)
@@ -435,7 +435,7 @@ public partial class Form1 : Form
             alignRightButton.Checked = true;
             alignJustifiedButton.Checked = false;
         }
-        richTextBoxEx1.SelectionTextAlignment = RichTextBoxEx.TextAlignment.Right;
+        richTextBoxEx1.SelectionAlignment = RichTextAlignment.Right;
     }
 
     private void alignJustifiedButton_Click(object sender, EventArgs e)
@@ -447,19 +447,19 @@ public partial class Form1 : Form
             alignRightButton.Checked = false;
             alignJustifiedButton.Checked = true;
         }
-        richTextBoxEx1.SelectionTextAlignment = RichTextBoxEx.TextAlignment.Justify;
+        richTextBoxEx1.SelectionAlignment = RichTextAlignment.Justify;
     }
 
     private void bulletedListButton_Click(object sender, EventArgs e)
     {
         if (bulletedListButton.Checked)
         {
-            richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.None;
+            richTextBoxEx1.SelectionListType = RichTextListType.None;
             bulletedListButton.Checked = false;
         }
         else
         {
-            richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.Bullet;
+            richTextBoxEx1.SelectionListType = RichTextListType.Bullet;
             bulletedListButton.Checked = true;
             numberedListButton.Checked = false;
         }
@@ -469,12 +469,12 @@ public partial class Form1 : Form
     {
         if (numberedListButton.Checked)
         {
-            richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.None;
+            richTextBoxEx1.SelectionListType = RichTextListType.None;
             numberedListButton.Checked = false;
         }
         else
         {
-            richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.Number;
+            richTextBoxEx1.SelectionListType = RichTextListType.Number;
             numberedListButton.Checked = true;
             bulletedListButton.Checked = false;
         }
@@ -482,82 +482,180 @@ public partial class Form1 : Form
 
     private void outdentButton_Click(object sender, EventArgs e)
     {
-        if (richTextBoxEx1.SelectionIndent >= 20)
-        {
-            richTextBoxEx1.SelectionIndent -= 20;
-        }
+        // 20 points = about 1 cm
+        richTextBoxEx1.SelectionIndent = Math.Max(richTextBoxEx1.SelectionIndent - 30, 0);
     }
 
     private void indentButton_Click(object sender, EventArgs e)
     {
-        richTextBoxEx1.SelectionIndent += 20;
+        richTextBoxEx1.SelectionIndent += 30;
     }
 
     private void ParagraphOptionsButton_Click(object sender, EventArgs e)
     {
         var dlg = new ParagraphFormatDialog();
 
-        dlg.alignmentComboBox.SelectedIndex = (int)richTextBoxEx1.SelectionTextAlignment - 1;
+        dlg.alignmentComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionAlignment - 1, 0, dlg.alignmentComboBox.Items.Count - 1);
 
-        dlg.leftIndentUpDown.Value = richTextBoxEx1.SelectionIndent;
-        dlg.rightIndentUpDown.Value = richTextBoxEx1.SelectionRightIndent;
-        dlg.firstLineIndentUpDown.Value = richTextBoxEx1.SelectionHangingIndent;
+        dlg.leftIndentUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionIndent, dlg.leftIndentUpDown.Minimum, dlg.leftIndentUpDown.Maximum);
+        dlg.rightIndentUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionRightIndent, dlg.rightIndentUpDown.Minimum, dlg.rightIndentUpDown.Maximum);
 
-        // Convert twips to points
-        dlg.spaceBeforeUpDown.Value = richTextBoxEx1.SelectionParagraphSpaceBefore / 20;
-        dlg.spaceAfterUpDown.Value = richTextBoxEx1.SelectionParagraphSpaceAfter / 20;
+        var hangingIndent = richTextBoxEx1.SelectionHangingIndent;
+        if (hangingIndent == 0)
+        {
+            dlg.specialIndentComboBox.SelectedIndex = 0;
+        }
+        else
+        {
+            if (hangingIndent < 0)
+            {
+                dlg.specialIndentComboBox.SelectedIndex = 1;
+            }
+            else if (hangingIndent > 0)
+            {
+                dlg.specialIndentComboBox.SelectedIndex = 2;
+            }
+            dlg.hangingIndentUpDown.Value = Math.Clamp(Math.Abs(hangingIndent), dlg.hangingIndentUpDown.Minimum, dlg.hangingIndentUpDown.Maximum);
+        }
 
-        var lineSpacingRule = richTextBoxEx1.SelectionLineSpacingRule;
-        // Convert to points or lines (depending on LineSpacingRule,
-        // see bLineSpacingRule on https://learn.microsoft.com/en-us/windows/win32/api/richedit/ns-richedit-paraformat2#members)
-        var lineSpacing = richTextBoxEx1.SelectionLineSpacing / 20;
-        dlg.spacingRuleComboBox.SelectedIndex = (int)lineSpacingRule;
-        dlg.lineSpacingValueUpDown.Value = lineSpacing;
-        //switch (lineSpacingRule)
-        //{
-        //    case RichTextLineSpacingRule.Minimum:
-        //    case RichTextLineSpacingRule.Exact:
-        //        dlg.lineSpacingValueUpDown.Value = lineSpacing;
-        //        break;
-        //    case RichTextLineSpacingRule.Multiple:
-        //        dlg.lineSpacingValueUpDown.Value = lineSpacing;
-        //        break;
-        //}
+        dlg.spaceBeforeUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionParagraphSpaceBefore, dlg.spaceBeforeUpDown.Minimum, dlg.spaceBeforeUpDown.Maximum);
+        dlg.spaceAfterUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionParagraphSpaceAfter, dlg.spaceAfterUpDown.Minimum, dlg.spaceAfterUpDown.Maximum);
 
-        dlg.tabsComboBox.Items.AddRange(richTextBoxEx1.SelectionTabs.Cast<object>().ToArray());
+        switch (richTextBoxEx1.SelectionLineSpacing)
+        {
+            case OneAndHalfLineSpacing oneAndHalfLineSpacing:
+                dlg.spacingRuleComboBox.SelectedIndex = 1;
+                break;
+            case DoubleLineSpacing doubleLineSpacing:
+                dlg.spacingRuleComboBox.SelectedIndex = 2;
+                break;
+            case MinimumLineSpacing minimumLineSpacing:
+                dlg.spacingRuleComboBox.SelectedIndex = 3;
+                dlg.lineSpacingValueUpDown.Value = Math.Clamp(minimumLineSpacing.Value, dlg.lineSpacingValueUpDown.Minimum, dlg.lineSpacingValueUpDown.Maximum);
+                break;
+            case ExactLineSpacing exactLineSpacing:
+                dlg.spacingRuleComboBox.SelectedIndex = 4;
+                dlg.lineSpacingValueUpDown.Value = Math.Clamp(exactLineSpacing.Value, dlg.lineSpacingValueUpDown.Minimum, dlg.lineSpacingValueUpDown.Maximum);
+                break;
+            case MultipleLineSpacing multipleLineSpacing:
+                dlg.spacingRuleComboBox.SelectedIndex = 5;
+                dlg.lineSpacingValueUpDown.Value = Math.Clamp(multipleLineSpacing.Value, dlg.lineSpacingValueUpDown.Minimum, dlg.lineSpacingValueUpDown.Maximum);
+                break;
+            case SingleLineSpacing singleLineSpacing:
+            default:
+                dlg.spacingRuleComboBox.SelectedIndex = 0;
+                break;
+        }
 
-        dlg.listTypeComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListType, 0, 6);
-        dlg.numberStyleComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListNumberStyle, 0, 3);
-        dlg.firstNumberUpDown.Value = richTextBoxEx1.SelectionListStartingNumber;
-        // Convert twips to points
-        dlg.bulletIndentUpDown.Value = richTextBoxEx1.SelectionBulletIndent / 20;
-        dlg.bulletTextDistanceUpDown.Value = richTextBoxEx1.SelectionBulletTextDistance / 20;
+        foreach (var tab in richTextBoxEx1.SelectionTabs.Order().Distinct().ToArray())
+        {
+            dlg.tabsComboBox.Items.Add(tab);
+        }
+
+        dlg.listTypeComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListType, 0, dlg.listTypeComboBox.Items.Count - 1);
+        dlg.numberStyleComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListNumberStyle, 0, dlg.numberStyleComboBox.Items.Count - 1);
+        dlg.firstNumberUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionListStartingNumber, dlg.firstNumberUpDown.Minimum, dlg.firstNumberUpDown.Maximum);
+        dlg.bulletTextDistanceUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionBulletTextDistance, dlg.bulletTextDistanceUpDown.Minimum, dlg.bulletTextDistanceUpDown.Maximum);
 
         if (dlg.ShowDialog(this) == DialogResult.OK)
         {
-            var alignment = dlg.alignmentComboBox.SelectedIndex + 1;
+            var alignment = (RichTextAlignment)dlg.alignmentComboBox.SelectedIndex + 1;
 
             var leftIndent = (int)dlg.leftIndentUpDown.Value;
             var rightIndent = (int)dlg.rightIndentUpDown.Value;
-            var firstLineIndent = (int)dlg.firstLineIndentUpDown.Value;
+            switch (dlg.specialIndentComboBox.SelectedIndex)
+            {
+                case 0:
+                    hangingIndent = 0;
+                    break;
+                case 1:
+                    hangingIndent = -(int)dlg.hangingIndentUpDown.Value;
+                    leftIndent = Math.Max(leftIndent, Math.Abs(hangingIndent));
+                    break;
+                case 2:
+                    hangingIndent = (int)dlg.hangingIndentUpDown.Value;
+                    break;
+            }
 
-            var spaceBefore = (int)(dlg.spaceBeforeUpDown.Value * 20);
-            var spaceAfter = (int)(dlg.spaceAfterUpDown.Value * 20);
+            var spaceBefore = (int)dlg.spaceBeforeUpDown.Value;
+            var spaceAfter = (int)dlg.spaceAfterUpDown.Value;
 
-            var lineSpacingRule2 = dlg.spacingRuleComboBox.SelectedIndex;
-            var lineSpacing2 = (int)(dlg.lineSpacingValueUpDown.Value * 20);
+            RichTextLineSpacing lineSpacing;
+            switch (dlg.spacingRuleComboBox.SelectedIndex)
+            {
+                case 1:
+                    lineSpacing = new OneAndHalfLineSpacing();
+                    break;
+                case 2:
+                    lineSpacing = new DoubleLineSpacing();
+                    break;
+                case 3:
+                    lineSpacing = new MinimumLineSpacing((int)dlg.lineSpacingValueUpDown.Value);
+                    break;
+                case 4:
+                    lineSpacing = new ExactLineSpacing((int)dlg.lineSpacingValueUpDown.Value);
+                    break;
+                case 5:
+                    lineSpacing = new MultipleLineSpacing((int)dlg.lineSpacingValueUpDown.Value);
+                    break;
+                case 0:
+                default: 
+                    lineSpacing = new SingleLineSpacing();
+                    break;
+            }           
 
-            //var tabs = dlg.tabsComboBox.Items.OfType<object>().Select(x => int.
+            var tabs = dlg.tabsComboBox.Items.OfType<int>().Order().Distinct().ToArray();
 
-            var listType = dlg.listTypeComboBox.SelectedIndex;
-            var numberStyle = dlg.numberStyleComboBox.SelectedIndex;
-            var firstNumber = dlg.firstNumberUpDown.Value;
-            var bulletIndent = (int)(dlg.bulletIndentUpDown.Value * 20);
-            var bulletTextDistance = (int)(dlg.bulletTextDistanceUpDown.Value * 20);
+            var listType = (RichTextListType)dlg.listTypeComboBox.SelectedIndex;
+            var listNumberStyle = (RichTextListNumberStyle)dlg.numberStyleComboBox.SelectedIndex;
+            var firstNumber = (ushort)dlg.firstNumberUpDown.Value;
+            var bulletTextDistance = (ushort)dlg.bulletTextDistanceUpDown.Value;
+
+            var defaultBulletTextDistance = (ushort)dlg.defaultBulletTextDistanceUpDown.Value;
+            var defaultBulletIndent = (int)dlg.defaultBulletIndentUpDown.Value;
+
+            richTextBoxEx1.SelectionAlignment = alignment;
+
+            richTextBoxEx1.SelectionIndent = leftIndent;
+            richTextBoxEx1.SelectionRightIndent = rightIndent;
+            richTextBoxEx1.SelectionHangingIndent = hangingIndent;
+
+            richTextBoxEx1.SelectionLineSpacing = lineSpacing;
+            richTextBoxEx1.SelectionParagraphSpaceBefore = spaceBefore;
+            richTextBoxEx1.SelectionParagraphSpaceAfter = spaceAfter;
 
             if (dlg.defaultSettingsCheckBox.Checked)
             {
+                richTextBoxEx1.DefaultLineSpacing = lineSpacing;
+                richTextBoxEx1.DefaultParagraphSpaceBefore = spaceBefore;
+                richTextBoxEx1.DefaultParagraphSpaceAfter = spaceAfter;
+                richTextBoxEx1.DefaultIndent = leftIndent;
+                richTextBoxEx1.DefaultRightIndent = rightIndent;
+                richTextBoxEx1.DefaultHangingIndent = hangingIndent;
             }
+
+            richTextBoxEx1.SelectionTabs = Array.Empty<int>();
+            richTextBoxEx1.SelectionTabs = tabs;
+
+            richTextBoxEx1.SelectionListType = listType;
+            switch (listType)
+            {
+                case RichTextListType.Number:
+                case RichTextListType.LowerCaseLetter:
+                case RichTextListType.UpperCaseLetter:
+                case RichTextListType.LowerCaseRoman:
+                case RichTextListType.UpperCaseRoman:
+                    richTextBoxEx1.SelectionListNumberStyle = listNumberStyle;
+                    richTextBoxEx1.SelectionListStartingNumber = firstNumber;
+                    break;
+            }
+            if (listType != RichTextListType.None)
+            {
+                richTextBoxEx1.SelectionBulletTextDistance = bulletTextDistance;
+            }
+            richTextBoxEx1.DefaultBulletTextDistance = defaultBulletTextDistance;
+            richTextBoxEx1.BulletIndent = defaultBulletIndent;
+
             richTextBoxEx1_SelectionChanged(sender, e);
         }
     }
@@ -573,11 +671,11 @@ public partial class Form1 : Form
         superScriptButton.Checked = scriptStyle == RichTextScriptStyle.Superscript;
         subscriptButton.Checked = scriptStyle == RichTextScriptStyle.Subscript;
 
-        var alignment = richTextBoxEx1.SelectionTextAlignment;
-        alignLeftButton.Checked = alignment == TextAlignment.Left;
-        alignCenterButton.Checked = alignment == TextAlignment.Center;
-        alignRightButton.Checked = alignment == TextAlignment.Right;
-        alignJustifiedButton.Checked = alignment == TextAlignment.Justify;
+        var alignment = richTextBoxEx1.SelectionAlignment;
+        alignLeftButton.Checked = alignment == RichTextAlignment.Left;
+        alignCenterButton.Checked = alignment == RichTextAlignment.Center;
+        alignRightButton.Checked = alignment == RichTextAlignment.Right;
+        alignJustifiedButton.Checked = alignment == RichTextAlignment.Justify;
 
         var listType = richTextBoxEx1.SelectionListType;
         bulletedListButton.Checked = listType == RichTextListType.Bullet;
@@ -604,7 +702,12 @@ public partial class Form1 : Form
 
     private void tableButton_Click(object sender, EventArgs e)
     {
-        richTextBoxEx1.InsertTable(3, 5);
+        var dlg = new InsertTableDialog();
+        if (dlg.ShowDialog(this) == DialogResult.OK)
+        {
+            richTextBoxEx1.InsertTable((int)dlg.rowsUpDown.Value, 
+                                       (int)dlg.columnsUpDown.Value);
+        }
     }
 
     private void hyperlinkButton_Click(object sender, EventArgs e)
@@ -634,7 +737,11 @@ public partial class Form1 : Form
 
     private void dateTimeButton_Click(object sender, EventArgs e)
     {
-        richTextBoxEx1.SelectedText = DateTime.Now.ToString();
+        var dlg = new InsertDateDialog();
+        if (dlg.ShowDialog() == DialogResult.OK)
+        {
+            richTextBoxEx1.SelectedText = dlg.SelectedDateTime;
+        }
     }
 
     private void aboutToolStripMenuItem_Click(object sender, EventArgs e)
@@ -721,11 +828,6 @@ public partial class Form1 : Form
     private void restore100ToolStripMenuItem_Click(object sender, EventArgs e)
     {
         richTextBoxEx1.ZoomFactor = 1;
-    }
-
-    private void toolStripButton1_Click(object sender, EventArgs e)
-    {
-        //richTextBoxEx1.InsertMath(@"\frac{a}{b}");
     }
 }
 

@@ -54,23 +54,49 @@ public partial class ParagraphFormatDialog : Form
                 lineSpacingValueUpDown.Enabled = true;
                 lineSpacingUnitLabel.Enabled = true;
                 lineSpacingUnitLabel.Text = "pt";
+                lineSpacingValueUpDown.DecimalPlaces = 0; // disable decimals in this mode
+                lineSpacingValueUpDown.Minimum = 1;
+                lineSpacingValueUpDown.Increment = 1;
+                lineSpacingValueUpDown.Value = 12; // 12 pt (example value)
                 break;
             case 5:
                 lineSpacingValueLabel.Enabled = true;
                 lineSpacingValueUpDown.Enabled = true;
                 lineSpacingUnitLabel.Enabled = true;
                 lineSpacingUnitLabel.Text = "lines";
+                lineSpacingValueUpDown.DecimalPlaces = 1; // allow decimals in this mode
+                lineSpacingValueUpDown.Minimum = 0.5M;
+                lineSpacingValueUpDown.Increment = 0.5M;
+                lineSpacingValueUpDown.Value = 1.5M; // 1,5 lines (example value)
                 break;
         }
     }
 
     private void button1_Click(object sender, EventArgs e)
     {
-        if ((!string.IsNullOrWhiteSpace(tabsComboBox.Text)) && 
-            (!tabsComboBox.Items.Contains(tabsComboBox.Text)))
+        if ((!string.IsNullOrWhiteSpace(tabsComboBox.Text)) &&
+            int.TryParse(tabsComboBox.Text, out int newValue) &&
+            newValue >= 0 &&
+            (!tabsComboBox.Items.Contains(newValue)))
         {
-            tabsComboBox.Items.Add(tabsComboBox.Text);
+            int index = 0;
+
+            while (index <= tabsComboBox.Items.Count)
+            {
+                if (index == tabsComboBox.Items.Count)
+                {
+                    tabsComboBox.Items.Add(newValue);
+                    break;
+                }
+                else if (tabsComboBox.Items[index] is int val && val > newValue)
+                {
+                    tabsComboBox.Items.Insert(index, newValue);
+                    break;
+                }
+                ++index;
+            }
         }
+        tabsComboBox.Text = string.Empty;
     }
 
     private void button2_Click(object sender, EventArgs e)
@@ -82,5 +108,20 @@ public partial class ParagraphFormatDialog : Form
     private void button3_Click(object sender, EventArgs e)
     {
         tabsComboBox.Items.Clear();
+    }
+
+    private void specialIndentComboBox_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        bool specialIndentEnabled = specialIndentComboBox.SelectedIndex != 0;
+        hangingIndentUpDown.Enabled = specialIndentEnabled;
+        label14.Enabled = specialIndentEnabled;
+    }
+
+    private void tabsComboBox_KeyUp(object sender, KeyEventArgs e)
+    {
+        if (e.KeyCode == Keys.Enter)
+        {
+            button1_Click(sender, e);
+        }
     }
 }
