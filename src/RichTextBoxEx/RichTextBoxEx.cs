@@ -491,7 +491,7 @@ public class RichTextBoxEx : RichTextBox
         {
             var font = GetSelectedTextRangeFont();
             font.SetShadow(value ? (int)tomConstants.tomTrue :
-                       (int)tomConstants.tomFalse);
+                       (int)tomConstants.tomFalse);           
             SetSelectedTextRangeFont(font);
         }
     }
@@ -1440,7 +1440,7 @@ public class RichTextBoxEx : RichTextBox
     internal ITextDocument2 GetTextDocument()
     {
         if (ITextDocument2Value is null)
-        {
+        {         
             var richEditOle = GetRichEditOleInterface();
             if (richEditOle == null)
             {
@@ -1465,22 +1465,18 @@ public class RichTextBoxEx : RichTextBox
     }
 
     [SupportedOSPlatform("windows8.0")]
-    internal ITextFont GetSelectedTextRangeFont()
-    //internal ITextFont2 GetSelectedTextRangeFont()
+    internal ITextFont2 GetSelectedTextRangeFont()
     {
         GetTextDocument().GetSelection2(out ITextSelection2 selection);
-        selection.GetFont(out ITextFont font);
-        //selection.GetFont2(out ITextFont2 font);
+        selection.GetFont2(out ITextFont2 font);
         return font;
     }
 
     [SupportedOSPlatform("windows8.0")]
-    internal void SetSelectedTextRangeFont(ITextFont font)
-    //internal void SetSelectedTextRangeFont(ITextFont2 font2)
+    internal void SetSelectedTextRangeFont(ITextFont2 font2)
     {
         GetTextDocument().GetSelection2(out ITextSelection2 selection);
-        //selection.SetFont2(font2);
-        selection.SetFont(font);
+        selection.SetFont2(font2);       
     }
 
     [SupportedOSPlatform("windows8.0")]
@@ -1502,6 +1498,9 @@ public class RichTextBoxEx : RichTextBox
     //            var ptr = Marshal.StringToBSTR(math);
     //            range.SetText((BSTR)ptr);
     //        }
+    //        //range.GetFont2(out var font);
+    //        //font.SetMathZone((int)tomConstants.tomTrue);
+    //        //range.SetFont2(font);
     //        range.BuildUpMath(0);
     //    }
     //}
@@ -1572,7 +1571,7 @@ public class RichTextBoxEx : RichTextBox
         fmtRange.chrg.cpMax = charTo;   //Indicate character from to character to 
         fmtRange.chrg.cpMin = charFrom;
         fmtRange.hdc = (Windows.Win32.Graphics.Gdi.HDC)hdc; //Use the same DC for measuring and rendering
-        fmtRange.hdcTarget = (Windows.Win32.Graphics.Gdi.HDC)hdc;       //Point at printer hDC
+        fmtRange.hdcTarget = (Windows.Win32.Graphics.Gdi.HDC)hdc;       //Point at printer hDC        
         fmtRange.rc = rectToPrint;      //Indicate the area on page to print
         fmtRange.rcPage = rectPage;     //Indicate size of page
 

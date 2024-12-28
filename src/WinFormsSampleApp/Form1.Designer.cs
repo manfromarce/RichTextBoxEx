@@ -29,8 +29,8 @@ partial class Form1
     private void InitializeComponent()
     {
         var resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
-        var singleLineSpacing3 = new RichTextBoxEx.SingleLineSpacing();
-        var singleLineSpacing4 = new RichTextBoxEx.SingleLineSpacing();
+        var singleLineSpacing1 = new RichTextBoxEx.SingleLineSpacing();
+        var singleLineSpacing2 = new RichTextBoxEx.SingleLineSpacing();
         this.toolStrip1 = new ToolStrip();
         this.fontComboBox = new ToolStripComboBox();
         this.fontSizeComboBox = new ToolStripComboBox();
@@ -402,9 +402,10 @@ partial class Form1
         // richTextBoxEx1
         // 
         this.richTextBoxEx1.AcceptsTab = true;
+        this.richTextBoxEx1.DefaultBulletTextDistance = (ushort)0;
         this.richTextBoxEx1.DefaultHangingIndent = 0;
         this.richTextBoxEx1.DefaultIndent = 0;
-        this.richTextBoxEx1.DefaultLineSpacing = singleLineSpacing3;
+        this.richTextBoxEx1.DefaultLineSpacing = singleLineSpacing1;
         this.richTextBoxEx1.DefaultParagraphSpaceAfter = 0;
         this.richTextBoxEx1.DefaultParagraphSpaceBefore = 0;
         this.richTextBoxEx1.DefaultRightIndent = 0;
@@ -417,27 +418,6 @@ partial class Form1
         this.richTextBoxEx1.Name = "richTextBoxEx1";
         this.richTextBoxEx1.PrintDocument = this.printDocument1;
         this.richTextBoxEx1.RequireCtrlForLinkClick = false;
-        this.richTextBoxEx1.SelectionAlignment = RichTextBoxEx.RichTextAlignment.Left;
-        this.richTextBoxEx1.SelectionBulletTextDistance = (ushort)0;
-        this.richTextBoxEx1.SelectionCapStyle = RichTextBoxEx.RichTextCapStyle.Standard;
-        this.richTextBoxEx1.SelectionFontName = "Segoe UI";
-        this.richTextBoxEx1.SelectionFontSize = 9F;
-        this.richTextBoxEx1.SelectionFontStretch = 0F;
-        this.richTextBoxEx1.SelectionHyperlinkDisplayText = "";
-        this.richTextBoxEx1.SelectionHyperlinkUrl = "";
-        this.richTextBoxEx1.SelectionIsBold = false;
-        this.richTextBoxEx1.SelectionIsItalic = false;
-        this.richTextBoxEx1.SelectionIsStrikethrough = false;
-        this.richTextBoxEx1.SelectionLineSpacing = singleLineSpacing4;
-        this.richTextBoxEx1.SelectionListNumberStyle = RichTextBoxEx.RichTextListNumberStyle.RightParenthesis;
-        this.richTextBoxEx1.SelectionListStartingNumber = (ushort)1;
-        this.richTextBoxEx1.SelectionListType = RichTextBoxEx.RichTextListType.None;
-        this.richTextBoxEx1.SelectionParagraphSpaceAfter = 0;
-        this.richTextBoxEx1.SelectionParagraphSpaceBefore = 0;
-        this.richTextBoxEx1.SelectionScriptStyle = RichTextBoxEx.RichTextScriptStyle.Normal;
-        this.richTextBoxEx1.SelectionShadow = false;
-        this.richTextBoxEx1.SelectionUnderlineColor = RichTextBoxEx.RichTextUnderlineColor.TextColor;
-        this.richTextBoxEx1.SelectionUnderlineStyle = RichTextBoxEx.RichTextUnderlineStyle.None;
         this.richTextBoxEx1.ShowSelectionMargin = true;
         this.richTextBoxEx1.Size = new Size(1149, 394);
         this.richTextBoxEx1.TabIndex = 1;

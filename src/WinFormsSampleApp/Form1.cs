@@ -599,10 +599,10 @@ public partial class Form1 : Form
                     lineSpacing = new MultipleLineSpacing((int)dlg.lineSpacingValueUpDown.Value);
                     break;
                 case 0:
-                default: 
+                default:
                     lineSpacing = new SingleLineSpacing();
                     break;
-            }           
+            }
 
             var tabs = dlg.tabsComboBox.Items.OfType<int>().Order().Distinct().ToArray();
 
@@ -705,7 +705,7 @@ public partial class Form1 : Form
         var dlg = new InsertTableDialog();
         if (dlg.ShowDialog(this) == DialogResult.OK)
         {
-            richTextBoxEx1.InsertTable((int)dlg.rowsUpDown.Value, 
+            richTextBoxEx1.InsertTable((int)dlg.rowsUpDown.Value,
                                        (int)dlg.columnsUpDown.Value);
         }
     }
