@@ -67,24 +67,17 @@ partial class ParagraphFormatDialog
         this.button1 = new Button();
         this.tabsComboBox = new ComboBox();
         this.tabPage3 = new TabPage();
-        this.numberStyleComboBox = new ComboBox();
-        this.numberStyleLabel = new Label();
-        this.bulletTextDistanceUpDown = new NumericUpDown();
-        this.firstNumberUpDown = new NumericUpDown();
-        this.label10 = new Label();
-        this.firstNumberLabel = new Label();
-        this.listTypeComboBox = new ComboBox();
-        this.label6 = new Label();
-        this.toolTip1 = new ToolTip(this.components);
-        this.defaultBulletIndentUpDown = new NumericUpDown();
-        this.label9 = new Label();
-        this.defaultBulletTextDistanceUpDown = new NumericUpDown();
-        this.label15 = new Label();
-        this.label18 = new Label();
-        this.label19 = new Label();
-        this.label20 = new Label();
         this.groupBox4 = new GroupBox();
-        this.groupBox5 = new GroupBox();
+        this.label6 = new Label();
+        this.label20 = new Label();
+        this.listTypeComboBox = new ComboBox();
+        this.firstNumberLabel = new Label();
+        this.label10 = new Label();
+        this.firstNumberUpDown = new NumericUpDown();
+        this.bulletTextDistanceUpDown = new NumericUpDown();
+        this.numberStyleLabel = new Label();
+        this.numberStyleComboBox = new ComboBox();
+        this.toolTip1 = new ToolTip(this.components);
         this.groupBox1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)this.hangingIndentUpDown).BeginInit();
         ((System.ComponentModel.ISupportInitialize)this.rightIndentUpDown).BeginInit();
@@ -98,12 +91,9 @@ partial class ParagraphFormatDialog
         this.groupBox3.SuspendLayout();
         this.tabPage2.SuspendLayout();
         this.tabPage3.SuspendLayout();
-        ((System.ComponentModel.ISupportInitialize)this.bulletTextDistanceUpDown).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)this.firstNumberUpDown).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)this.defaultBulletIndentUpDown).BeginInit();
-        ((System.ComponentModel.ISupportInitialize)this.defaultBulletTextDistanceUpDown).BeginInit();
         this.groupBox4.SuspendLayout();
-        this.groupBox5.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)this.firstNumberUpDown).BeginInit();
+        ((System.ComponentModel.ISupportInitialize)this.bulletTextDistanceUpDown).BeginInit();
         SuspendLayout();
         // 
         // groupBox1
@@ -491,7 +481,6 @@ partial class ParagraphFormatDialog
         // 
         // tabPage3
         // 
-        this.tabPage3.Controls.Add(this.groupBox5);
         this.tabPage3.Controls.Add(this.groupBox4);
         this.tabPage3.Location = new Point(4, 29);
         this.tabPage3.Name = "tabPage3";
@@ -500,150 +489,6 @@ partial class ParagraphFormatDialog
         this.tabPage3.TabIndex = 2;
         this.tabPage3.Text = "List";
         this.tabPage3.UseVisualStyleBackColor = true;
-        // 
-        // numberStyleComboBox
-        // 
-        this.numberStyleComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-        this.numberStyleComboBox.FormattingEnabled = true;
-        this.numberStyleComboBox.Items.AddRange(new object[] { "Right parenthesis - 1) / A) / ...", "Double parenthesis - (1) / (A) / ...", "Period - 1. / 2. / 3.", "Number or letter only" });
-        this.numberStyleComboBox.Location = new Point(221, 77);
-        this.numberStyleComboBox.Name = "numberStyleComboBox";
-        this.numberStyleComboBox.Size = new Size(163, 28);
-        this.numberStyleComboBox.TabIndex = 17;
-        // 
-        // numberStyleLabel
-        // 
-        this.numberStyleLabel.AutoSize = true;
-        this.numberStyleLabel.Location = new Point(15, 80);
-        this.numberStyleLabel.Name = "numberStyleLabel";
-        this.numberStyleLabel.Size = new Size(100, 20);
-        this.numberStyleLabel.TabIndex = 16;
-        this.numberStyleLabel.Text = "Number style:";
-        // 
-        // bulletTextDistanceUpDown
-        // 
-        this.bulletTextDistanceUpDown.Location = new Point(221, 165);
-        this.bulletTextDistanceUpDown.Maximum = new decimal(new int[] { 65534, 0, 0, 0 });
-        this.bulletTextDistanceUpDown.Name = "bulletTextDistanceUpDown";
-        this.bulletTextDistanceUpDown.Size = new Size(133, 27);
-        this.bulletTextDistanceUpDown.TabIndex = 15;
-        // 
-        // firstNumberUpDown
-        // 
-        this.firstNumberUpDown.Location = new Point(221, 123);
-        this.firstNumberUpDown.Maximum = new decimal(new int[] { 65534, 0, 0, 0 });
-        this.firstNumberUpDown.Name = "firstNumberUpDown";
-        this.firstNumberUpDown.Size = new Size(163, 27);
-        this.firstNumberUpDown.TabIndex = 13;
-        this.firstNumberUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
-        // 
-        // label10
-        // 
-        this.label10.AutoSize = true;
-        this.label10.Location = new Point(15, 167);
-        this.label10.Name = "label10";
-        this.label10.Size = new Size(140, 20);
-        this.label10.TabIndex = 12;
-        this.label10.Text = "Bullet-text distance:";
-        // 
-        // firstNumberLabel
-        // 
-        this.firstNumberLabel.AutoSize = true;
-        this.firstNumberLabel.Location = new Point(15, 125);
-        this.firstNumberLabel.Name = "firstNumberLabel";
-        this.firstNumberLabel.Size = new Size(94, 20);
-        this.firstNumberLabel.TabIndex = 10;
-        this.firstNumberLabel.Text = "First number:";
-        // 
-        // listTypeComboBox
-        // 
-        this.listTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-        this.listTypeComboBox.FormattingEnabled = true;
-        this.listTypeComboBox.Items.AddRange(new object[] { "None", "Bulleted (•)", "1, 2, 3, 4, 5", "a, b, c, d, e", "A, B, C, D, E", "i, ii, iii, iv, v", "I, II, III, IV, V" });
-        this.listTypeComboBox.Location = new Point(221, 30);
-        this.listTypeComboBox.Name = "listTypeComboBox";
-        this.listTypeComboBox.Size = new Size(163, 28);
-        this.listTypeComboBox.TabIndex = 7;
-        this.listTypeComboBox.SelectedIndexChanged += listTypeComboBox_SelectedIndexChanged;
-        // 
-        // label6
-        // 
-        this.label6.AutoSize = true;
-        this.label6.Location = new Point(15, 33);
-        this.label6.Name = "label6";
-        this.label6.Size = new Size(67, 20);
-        this.label6.TabIndex = 6;
-        this.label6.Text = "List type:";
-        // 
-        // toolTip1
-        // 
-        this.toolTip1.AutomaticDelay = 0;
-        this.toolTip1.AutoPopDelay = 999999;
-        this.toolTip1.InitialDelay = 0;
-        this.toolTip1.ReshowDelay = 0;
-        this.toolTip1.ToolTipIcon = ToolTipIcon.Info;
-        this.toolTip1.ToolTipTitle = "Hint";
-        // 
-        // defaultBulletIndentUpDown
-        // 
-        this.defaultBulletIndentUpDown.Location = new Point(221, 37);
-        this.defaultBulletIndentUpDown.Maximum = new decimal(new int[] { 65534, 0, 0, 0 });
-        this.defaultBulletIndentUpDown.Name = "defaultBulletIndentUpDown";
-        this.defaultBulletIndentUpDown.Size = new Size(133, 27);
-        this.defaultBulletIndentUpDown.TabIndex = 19;
-        // 
-        // label9
-        // 
-        this.label9.AutoSize = true;
-        this.label9.Location = new Point(15, 39);
-        this.label9.Name = "label9";
-        this.label9.Size = new Size(149, 20);
-        this.label9.TabIndex = 18;
-        this.label9.Text = "Default bullet indent:";
-        // 
-        // defaultBulletTextDistanceUpDown
-        // 
-        this.defaultBulletTextDistanceUpDown.Location = new Point(221, 79);
-        this.defaultBulletTextDistanceUpDown.Maximum = new decimal(new int[] { 65534, 0, 0, 0 });
-        this.defaultBulletTextDistanceUpDown.Name = "defaultBulletTextDistanceUpDown";
-        this.defaultBulletTextDistanceUpDown.Size = new Size(133, 27);
-        this.defaultBulletTextDistanceUpDown.TabIndex = 21;
-        // 
-        // label15
-        // 
-        this.label15.AutoSize = true;
-        this.label15.Location = new Point(15, 81);
-        this.label15.Name = "label15";
-        this.label15.Size = new Size(193, 20);
-        this.label15.TabIndex = 20;
-        this.label15.Text = "Default bullet-text distance:";
-        // 
-        // label18
-        // 
-        this.label18.AutoSize = true;
-        this.label18.Location = new Point(361, 81);
-        this.label18.Name = "label18";
-        this.label18.Size = new Size(23, 20);
-        this.label18.TabIndex = 22;
-        this.label18.Text = "pt";
-        // 
-        // label19
-        // 
-        this.label19.AutoSize = true;
-        this.label19.Location = new Point(361, 39);
-        this.label19.Name = "label19";
-        this.label19.Size = new Size(23, 20);
-        this.label19.TabIndex = 23;
-        this.label19.Text = "pt";
-        // 
-        // label20
-        // 
-        this.label20.AutoSize = true;
-        this.label20.Location = new Point(361, 167);
-        this.label20.Name = "label20";
-        this.label20.Size = new Size(23, 20);
-        this.label20.TabIndex = 24;
-        this.label20.Text = "pt";
         // 
         // groupBox4
         // 
@@ -663,20 +508,97 @@ partial class ParagraphFormatDialog
         this.groupBox4.TabStop = false;
         this.groupBox4.Text = "Current paragraph settings";
         // 
-        // groupBox5
+        // label6
         // 
-        this.groupBox5.Controls.Add(this.defaultBulletIndentUpDown);
-        this.groupBox5.Controls.Add(this.label9);
-        this.groupBox5.Controls.Add(this.label19);
-        this.groupBox5.Controls.Add(this.label15);
-        this.groupBox5.Controls.Add(this.label18);
-        this.groupBox5.Controls.Add(this.defaultBulletTextDistanceUpDown);
-        this.groupBox5.Location = new Point(4, 224);
-        this.groupBox5.Name = "groupBox5";
-        this.groupBox5.Size = new Size(390, 125);
-        this.groupBox5.TabIndex = 26;
-        this.groupBox5.TabStop = false;
-        this.groupBox5.Text = "Default settings";
+        this.label6.AutoSize = true;
+        this.label6.Location = new Point(15, 33);
+        this.label6.Name = "label6";
+        this.label6.Size = new Size(67, 20);
+        this.label6.TabIndex = 6;
+        this.label6.Text = "List type:";
+        // 
+        // label20
+        // 
+        this.label20.AutoSize = true;
+        this.label20.Location = new Point(361, 167);
+        this.label20.Name = "label20";
+        this.label20.Size = new Size(23, 20);
+        this.label20.TabIndex = 24;
+        this.label20.Text = "pt";
+        // 
+        // listTypeComboBox
+        // 
+        this.listTypeComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        this.listTypeComboBox.FormattingEnabled = true;
+        this.listTypeComboBox.Items.AddRange(new object[] { "None", "Bulleted (•)", "1, 2, 3, 4, 5", "a, b, c, d, e", "A, B, C, D, E", "i, ii, iii, iv, v", "I, II, III, IV, V", "①, ②, ③", "❶, ❷, ❸", "⚬", "■", "-", "❖", "⮚", "✔" });
+        this.listTypeComboBox.Location = new Point(221, 30);
+        this.listTypeComboBox.Name = "listTypeComboBox";
+        this.listTypeComboBox.Size = new Size(163, 28);
+        this.listTypeComboBox.TabIndex = 7;
+        this.listTypeComboBox.SelectedIndexChanged += listTypeComboBox_SelectedIndexChanged;
+        // 
+        // firstNumberLabel
+        // 
+        this.firstNumberLabel.AutoSize = true;
+        this.firstNumberLabel.Location = new Point(15, 125);
+        this.firstNumberLabel.Name = "firstNumberLabel";
+        this.firstNumberLabel.Size = new Size(94, 20);
+        this.firstNumberLabel.TabIndex = 10;
+        this.firstNumberLabel.Text = "First number:";
+        // 
+        // label10
+        // 
+        this.label10.AutoSize = true;
+        this.label10.Location = new Point(15, 167);
+        this.label10.Name = "label10";
+        this.label10.Size = new Size(140, 20);
+        this.label10.TabIndex = 12;
+        this.label10.Text = "Bullet-text distance:";
+        // 
+        // firstNumberUpDown
+        // 
+        this.firstNumberUpDown.Location = new Point(221, 123);
+        this.firstNumberUpDown.Maximum = new decimal(new int[] { 65534, 0, 0, 0 });
+        this.firstNumberUpDown.Name = "firstNumberUpDown";
+        this.firstNumberUpDown.Size = new Size(163, 27);
+        this.firstNumberUpDown.TabIndex = 13;
+        this.firstNumberUpDown.Value = new decimal(new int[] { 1, 0, 0, 0 });
+        // 
+        // bulletTextDistanceUpDown
+        // 
+        this.bulletTextDistanceUpDown.Location = new Point(221, 165);
+        this.bulletTextDistanceUpDown.Maximum = new decimal(new int[] { 65534, 0, 0, 0 });
+        this.bulletTextDistanceUpDown.Name = "bulletTextDistanceUpDown";
+        this.bulletTextDistanceUpDown.Size = new Size(133, 27);
+        this.bulletTextDistanceUpDown.TabIndex = 15;
+        // 
+        // numberStyleLabel
+        // 
+        this.numberStyleLabel.AutoSize = true;
+        this.numberStyleLabel.Location = new Point(15, 80);
+        this.numberStyleLabel.Name = "numberStyleLabel";
+        this.numberStyleLabel.Size = new Size(100, 20);
+        this.numberStyleLabel.TabIndex = 16;
+        this.numberStyleLabel.Text = "Number style:";
+        // 
+        // numberStyleComboBox
+        // 
+        this.numberStyleComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+        this.numberStyleComboBox.FormattingEnabled = true;
+        this.numberStyleComboBox.Items.AddRange(new object[] { "Right parenthesis - 1) / A) / ...", "Double parenthesis - (1) / (A) / ...", "Period - 1. / 2. / 3.", "Number or letter only" });
+        this.numberStyleComboBox.Location = new Point(221, 77);
+        this.numberStyleComboBox.Name = "numberStyleComboBox";
+        this.numberStyleComboBox.Size = new Size(163, 28);
+        this.numberStyleComboBox.TabIndex = 17;
+        // 
+        // toolTip1
+        // 
+        this.toolTip1.AutomaticDelay = 0;
+        this.toolTip1.AutoPopDelay = 999999;
+        this.toolTip1.InitialDelay = 0;
+        this.toolTip1.ReshowDelay = 0;
+        this.toolTip1.ToolTipIcon = ToolTipIcon.Info;
+        this.toolTip1.ToolTipTitle = "Hint";
         // 
         // ParagraphFormatDialog
         // 
@@ -714,14 +636,10 @@ partial class ParagraphFormatDialog
         this.tabPage2.ResumeLayout(false);
         this.tabPage2.PerformLayout();
         this.tabPage3.ResumeLayout(false);
-        ((System.ComponentModel.ISupportInitialize)this.bulletTextDistanceUpDown).EndInit();
-        ((System.ComponentModel.ISupportInitialize)this.firstNumberUpDown).EndInit();
-        ((System.ComponentModel.ISupportInitialize)this.defaultBulletIndentUpDown).EndInit();
-        ((System.ComponentModel.ISupportInitialize)this.defaultBulletTextDistanceUpDown).EndInit();
         this.groupBox4.ResumeLayout(false);
         this.groupBox4.PerformLayout();
-        this.groupBox5.ResumeLayout(false);
-        this.groupBox5.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)this.firstNumberUpDown).EndInit();
+        ((System.ComponentModel.ISupportInitialize)this.bulletTextDistanceUpDown).EndInit();
         ResumeLayout(false);
     }
 
@@ -775,12 +693,5 @@ partial class ParagraphFormatDialog
     private ToolTip toolTip1;
     public ComboBox specialIndentComboBox;
     private Label label20;
-    private Label label19;
-    private Label label18;
-    public NumericUpDown defaultBulletTextDistanceUpDown;
-    private Label label15;
-    public NumericUpDown defaultBulletIndentUpDown;
-    private Label label9;
     private GroupBox groupBox4;
-    private GroupBox groupBox5;
 }

@@ -402,13 +402,6 @@ partial class Form1
         // richTextBoxEx1
         // 
         this.richTextBoxEx1.AcceptsTab = true;
-        this.richTextBoxEx1.DefaultBulletTextDistance = (ushort)0;
-        this.richTextBoxEx1.DefaultHangingIndent = 0;
-        this.richTextBoxEx1.DefaultIndent = 0;
-        this.richTextBoxEx1.DefaultLineSpacing = singleLineSpacing1;
-        this.richTextBoxEx1.DefaultParagraphSpaceAfter = 0;
-        this.richTextBoxEx1.DefaultParagraphSpaceBefore = 0;
-        this.richTextBoxEx1.DefaultRightIndent = 0;
         this.richTextBoxEx1.DetectUrls = false;
         this.richTextBoxEx1.Dock = DockStyle.Fill;
         this.richTextBoxEx1.EnableAutoDragDrop = true;

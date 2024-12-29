@@ -15,5 +15,34 @@ public enum RichTextListType
     UpperCaseLetter = 4,
     LowerCaseRoman = 5,
     UpperCaseRoman = 6,
-    // Special = 7 // increments char for each item (?) - undocumented
+    Sequence = 7,
+    NumberedCircle = 8,
+    NumberedBlackCircleWingding = 9,
+    NumberedWhiteCircleWingding = 10,
+    NumberedArabicWide = 11,
+    NumberedChS = 12,
+    NumberedChT = 13,
+    NumberedJpnChs = 14,
+    NumberedJpnKor = 15,
+    NumberedArabic1 = 16,
+    NumberedArabic2 = 17,
+    NumberedHebrew = 18,
+    NumberedThaiAlpha = 19,
+    NumberedThaiNum = 20,
+    NumberedHindiAlpha = 21,
+    NumberedHindiAlpha1 = 22,
+    NumberedHindiNum = 23
+}
+
+public static class RichTextListHelper
+{
+    public static bool IsNumbered(RichTextListType listType)
+    {
+        return IsNumbered((int)listType);
+    }
+
+    public static bool IsNumbered(int listType)
+    {
+        return listType > 1 && listType <= 23;
+    }
 }

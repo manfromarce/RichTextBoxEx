@@ -30,7 +30,7 @@ public partial class ParagraphFormatDialog : Form
 
     private void listTypeComboBox_SelectedIndexChanged(object sender, EventArgs e)
     {
-        bool isNumbered = listTypeComboBox.SelectedIndex >= 2;
+        bool isNumbered = listTypeComboBox.SelectedIndex >= 2 && listTypeComboBox.SelectedIndex <= 9;
         numberStyleLabel.Enabled = isNumbered;
         numberStyleComboBox.Enabled = isNumbered;
         firstNumberLabel.Enabled = isNumbered;

@@ -552,7 +552,46 @@ public partial class Form1 : Form
             dlg.tabsComboBox.Items.Add(tab);
         }
 
-        dlg.listTypeComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListType, 0, dlg.listTypeComboBox.Items.Count - 1);
+        switch (richTextBoxEx1.SelectionListType)
+        {
+            case RichTextListType.None:
+                dlg.listTypeComboBox.SelectedIndex = 0; break;
+            case RichTextListType.Bullet:
+                dlg.listTypeComboBox.SelectedIndex = 1;
+                var bulletChar = richTextBoxEx1.SelectionListBulletChar;
+                if (bulletChar != '•')
+                {
+                    // Not every char is handled by the dialog at this time
+                    for (int i = 0; i < dlg.listTypeComboBox.Items.Count; i++)
+                    {
+                        if (dlg.listTypeComboBox.Items[i] is string s && (!string.IsNullOrEmpty(s)) && s[0] == bulletChar)
+                        {
+                            dlg.listTypeComboBox.SelectedIndex = i;
+                            break;
+                        }
+                    }
+                }
+                break;
+            case RichTextListType.Number:
+                dlg.listTypeComboBox.SelectedIndex = 7; break;
+            case RichTextListType.LowerCaseLetter:
+                dlg.listTypeComboBox.SelectedIndex = 8; break;
+            case RichTextListType.UpperCaseLetter:
+                dlg.listTypeComboBox.SelectedIndex = 9; break;
+            case RichTextListType.LowerCaseRoman:
+                dlg.listTypeComboBox.SelectedIndex = 10; break;
+            case RichTextListType.UpperCaseRoman:
+                dlg.listTypeComboBox.SelectedIndex = 11; break;
+            case RichTextListType.NumberedCircle:
+            case RichTextListType.NumberedWhiteCircleWingding:
+                dlg.listTypeComboBox.SelectedIndex = 12; break;
+            case RichTextListType.NumberedBlackCircleWingding:
+                dlg.listTypeComboBox.SelectedIndex = 13; break;
+            default:
+                // Not every char is handled by the dialog at this time, select the generic "bulleted"
+                dlg.listTypeComboBox.SelectedIndex = 1; break;
+        }
+
         dlg.numberStyleComboBox.SelectedIndex = Math.Clamp((int)richTextBoxEx1.SelectionListNumberStyle, 0, dlg.numberStyleComboBox.Items.Count - 1);
         dlg.firstNumberUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionListStartingNumber, dlg.firstNumberUpDown.Minimum, dlg.firstNumberUpDown.Maximum);
         dlg.bulletTextDistanceUpDown.Value = Math.Clamp(richTextBoxEx1.SelectionBulletTextDistance, dlg.bulletTextDistanceUpDown.Minimum, dlg.bulletTextDistanceUpDown.Maximum);
@@ -606,13 +645,20 @@ public partial class Form1 : Form
 
             var tabs = dlg.tabsComboBox.Items.OfType<int>().Order().Distinct().ToArray();
 
-            var listType = (RichTextListType)dlg.listTypeComboBox.SelectedIndex;
+            RichTextListType? listType = null;
+            char? bulletChar = null;
+            if (dlg.listTypeComboBox.SelectedIndex >= 0 && dlg.listTypeComboBox.SelectedIndex <= 8)
+            {
+                listType = (RichTextListType)dlg.listTypeComboBox.SelectedIndex;
+            }
+            else if (dlg.listTypeComboBox.SelectedItem is string s && !string.IsNullOrEmpty(s))
+            {
+                listType = RichTextListType.Bullet;
+                bulletChar = s[0];
+            }
             var listNumberStyle = (RichTextListNumberStyle)dlg.numberStyleComboBox.SelectedIndex;
             var firstNumber = (ushort)dlg.firstNumberUpDown.Value;
             var bulletTextDistance = (ushort)dlg.bulletTextDistanceUpDown.Value;
-
-            var defaultBulletTextDistance = (ushort)dlg.defaultBulletTextDistanceUpDown.Value;
-            var defaultBulletIndent = (int)dlg.defaultBulletIndentUpDown.Value;
 
             richTextBoxEx1.SelectionAlignment = alignment;
 
@@ -637,24 +683,23 @@ public partial class Form1 : Form
             richTextBoxEx1.SelectionTabs = Array.Empty<int>();
             richTextBoxEx1.SelectionTabs = tabs;
 
-            richTextBoxEx1.SelectionListType = listType;
-            switch (listType)
+            if (listType != null)
             {
-                case RichTextListType.Number:
-                case RichTextListType.LowerCaseLetter:
-                case RichTextListType.UpperCaseLetter:
-                case RichTextListType.LowerCaseRoman:
-                case RichTextListType.UpperCaseRoman:
+                richTextBoxEx1.SelectionListType = listType.Value;
+                if (bulletChar != null)
+                {
+                    richTextBoxEx1.SelectionListBulletChar = bulletChar.Value;
+                }
+                if (RichTextListHelper.IsNumbered(listType.Value))
+                {                
                     richTextBoxEx1.SelectionListNumberStyle = listNumberStyle;
                     richTextBoxEx1.SelectionListStartingNumber = firstNumber;
-                    break;
+                }
+                if (listType != RichTextListType.None)
+                {
+                    richTextBoxEx1.SelectionBulletTextDistance = bulletTextDistance;
+                }
             }
-            if (listType != RichTextListType.None)
-            {
-                richTextBoxEx1.SelectionBulletTextDistance = bulletTextDistance;
-            }
-            richTextBoxEx1.DefaultBulletTextDistance = defaultBulletTextDistance;
-            richTextBoxEx1.BulletIndent = defaultBulletIndent;
 
             richTextBoxEx1_SelectionChanged(sender, e);
         }
@@ -679,11 +724,7 @@ public partial class Form1 : Form
 
         var listType = richTextBoxEx1.SelectionListType;
         bulletedListButton.Checked = listType == RichTextListType.Bullet;
-        numberedListButton.Checked = (listType == RichTextListType.Number ||
-                                      listType == RichTextListType.LowerCaseLetter ||
-                                      listType == RichTextListType.UpperCaseLetter ||
-                                      listType == RichTextListType.LowerCaseRoman ||
-                                      listType == RichTextListType.UpperCaseRoman);
+        numberedListButton.Checked = RichTextListHelper.IsNumbered(listType);
 
         _updateFont = false;
         fontComboBox.Text = richTextBoxEx1.SelectionFontName;

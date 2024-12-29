@@ -825,9 +825,6 @@ public class RichTextBoxEx : RichTextBox
 
     #region Lists
 
-    private int _defaultBulletIndent = 0;
-    private ushort _defaultBulletTextDistance = 0;
-
     /// <summary>
     /// Gets or sets the list type (none, bulleted, numbered, letter-numbered) for the current selection or insertion point.
     /// </summary>
@@ -840,28 +837,77 @@ public class RichTextBoxEx : RichTextBox
             var pf = CreateParaFormat2();
             pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING;
             SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
-            return (RichTextListType)pf.Base.wNumbering;
+            // Check if value is in the standard list types enum.
+            if ((int)pf.Base.wNumbering <= 23)
+            {
+                return (RichTextListType)pf.Base.wNumbering;
+            }
+            else
+            {
+                return RichTextListType.Bullet;
+            }
         }
         set
         {
-            // Since dxOffset is used for both hanging indent and bullet indent,
-            // avoid unnecessary changes which may produce unexpected indent values
-            // when setting multiple properties (e.g. Paragraph format dialog in the sample app)
             if (value != SelectionListType)
             {
                 var pf = CreateParaFormat2();
-                pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING | PARAFORMAT_MASK.PFM_OFFSET;
+                pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING;
                 switch (value)
                 {
                     case RichTextListType.None:
-                        pf.Base.dxOffset = 0;
                         pf.Base.wNumbering = 0;
                         break;
                     default:
-                        pf.Base.dxOffset = _defaultBulletIndent;
                         pf.Base.wNumbering = (PARAFORMAT_NUMBERING)value;
                         break;
                 }
+                SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
+            }
+        }
+    }  
+    
+    /// <summary>
+    /// Get or sets the char to use for bulleted lists. 
+    /// When retrieving the value, returns '\0' (NUL) if the current paragraph or insertion point is not a bulleted list.
+    /// When setting the value, the paragraph is converted to a bulleted list and a valid non-control char must be used.
+    /// </summary>
+    public char SelectionListBulletChar
+    {
+        get
+        {
+            var pf = CreateParaFormat2();
+            pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING;
+            SendMessage(hwnd, PInvoke.EM_GETPARAFORMAT, 0, ref pf);
+            // Check if value is in the standard list types enum.            
+            if (pf.Base.wNumbering == PARAFORMAT_NUMBERING.PFN_BULLET)
+            {
+                // Default bullet list
+                return '•';
+            }
+            else if ((int)pf.Base.wNumbering <= 23)
+            {
+                // Not a bulleted list
+                return '\0';
+            }
+            else
+            {
+                // Custom char
+                return (char)pf.Base.wNumbering;
+            }
+        }
+        set
+        {
+            // Control chars are not valid for bulleted lists.
+            if (value < 0x21 || (value > 0x7E && value < 0xA1))
+            {
+                throw new Exception("Invalid bullet char.");
+            }
+            else
+            {
+                var pf = CreateParaFormat2();
+                pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERING;
+                pf.Base.wNumbering = (PARAFORMAT_NUMBERING)value;
                 SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, 0, ref pf);
             }
         }
@@ -916,8 +962,9 @@ public class RichTextBoxEx : RichTextBox
     }
 
     /// <summary>
-    /// Gets or sets bullet-text distance (in points)
+    /// Gets or sets bullet-text distance (in points) 
     /// for list items containing the current selection or insertion point.
+    /// New subsequent list items inherit this property.
     /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
@@ -939,41 +986,9 @@ public class RichTextBoxEx : RichTextBox
         }
     }
 
-    /// <summary>
-    /// Gets or sets the default bullet-text distance for new list items (in points).
-    /// </summary>
     [Browsable(false)]
     [EditorBrowsable(EditorBrowsableState.Never)]
-    public ushort DefaultBulletTextDistance
-    {
-        get
-        {            
-            return (ushort)(_defaultBulletTextDistance / 20);
-        }
-        set
-        {
-            _defaultBulletTextDistance = (ushort)(value * 20);
-            var pf = CreateParaFormat2();
-            pf.Base.dwMask = PARAFORMAT_MASK.PFM_NUMBERINGTAB;
-            pf.wNumberingTab = _defaultBulletTextDistance;
-            SendMessage(hwnd, PInvoke.EM_SETPARAFORMAT, PInvoke.SPF_SETDEFAULT, ref pf);
-        }
-    }
-
-    /// <summary>
-    /// Gets or sets the default indent for list items (in points), relative to the first paragraph line indent.
-    /// </summary>
-    [Browsable(false)]
-    [EditorBrowsable(EditorBrowsableState.Never)]
-    public new int BulletIndent
-    {
-        get => _defaultBulletIndent;
-        set
-        {
-            _defaultBulletIndent = value;            
-        }
-    }
-
+    [Obsolete("SelectionListType should be used instead of SelectionBullet.")]
     public new bool SelectionBullet
     {
         get
@@ -982,7 +997,25 @@ public class RichTextBoxEx : RichTextBox
         }
         set 
         {
-            SelectionListType = value ? RichTextListType.Bullet : RichTextListType.None;
+            // Call the base class as it uses an internal value for BulletIndent.
+            // The SelectionListType property does not consider BulletIndent,
+            // as the bullet-text distance is set using a separate PARAFORMAT member (wNumberingTab).
+            base.SelectionBullet = value;
+        }
+    }
+
+    [Browsable(false)]
+    [EditorBrowsable(EditorBrowsableState.Never)]
+    [Obsolete("SelectionBulletTextDistance and SelectionIndent should be used instead of BulletIndent.")]
+    public new int BulletIndent
+    {
+        get
+        {
+            return base.BulletIndent;
+        }
+        set
+        {            
+            base.BulletIndent = value;
         }
     }
 
