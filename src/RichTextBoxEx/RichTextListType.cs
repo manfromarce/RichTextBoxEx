@@ -15,7 +15,7 @@ public enum RichTextListType
     UpperCaseLetter = 4,
     LowerCaseRoman = 5,
     UpperCaseRoman = 6,
-    Sequence = 7,
+    Sequence = 7, // Increments char code on each new list item
     NumberedCircle = 8,
     NumberedBlackCircleWingding = 9,
     NumberedWhiteCircleWingding = 10,

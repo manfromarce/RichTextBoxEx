@@ -1388,8 +1388,8 @@ public class RichTextBoxEx : RichTextBox
         if (this.IRichEditOleValue == null)
         {
             // Allocate the ptr that EM_GETOLEINTERFACE will fill in
-            IntPtr ptr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(IntPtr)));  // Alloc the ptr.
-            Marshal.WriteIntPtr(ptr, IntPtr.Zero);                                    // Clear it.
+            IntPtr ptr = Marshal.AllocCoTaskMem(Marshal.SizeOf(typeof(IntPtr))); // Alloc the ptr.
+            Marshal.WriteIntPtr(ptr, IntPtr.Zero); // Clear the ptr.
             try
             {
                 if (PInvoke.SendMessage(hwnd, PInvoke.EM_GETOLEINTERFACE, 0, ptr) != 0)
@@ -1573,36 +1573,36 @@ public class RichTextBoxEx : RichTextBox
 
     // Convert between the unit used by .NET and Windows Forms (1/100 inch) 
     // and the unit used by Win32 API calls (twips = 1/1440 inch)
-    private const double anInch = 14.4;
+    private const double toTwips = 14.4;
 
     int checkPrint = 0;
 
-    // Render the contents of the RichTextBox for printing
-    //    Return the last character printed + 1 (printing start from this point for
-    //    next page)
+    // Render the contents of the RichTextBox for printing.
+    // Return the last character printed + 1 (printing start from this point for
+    // next page)
     public int Print(int charFrom, int charTo, PrintPageEventArgs e)
     {
         //Calculate the area to render and print
         RECT rectToPrint = new RECT(
-            (int)(e.MarginBounds.Left * anInch),
-            (int)(e.MarginBounds.Top * anInch),
-            (int)(e.MarginBounds.Right * anInch),
-            (int)(e.MarginBounds.Bottom * anInch));
+            (int)(e.MarginBounds.Left * toTwips),
+            (int)(e.MarginBounds.Top * toTwips),
+            (int)(e.MarginBounds.Right * toTwips),
+            (int)(e.MarginBounds.Bottom * toTwips));
 
         //Calculate the size of the page
         RECT rectPage = new RECT(
-            (int)(e.PageBounds.Left * anInch),
-            (int)(e.PageBounds.Top * anInch),
-            (int)(e.PageBounds.Right * anInch),
-            (int)(e.PageBounds.Bottom * anInch));
+            (int)(e.PageBounds.Left * toTwips),
+            (int)(e.PageBounds.Top * toTwips),
+            (int)(e.PageBounds.Right * toTwips),
+            (int)(e.PageBounds.Bottom * toTwips));
 
         IntPtr hdc = e.Graphics.GetHdc();
 
         FORMATRANGE fmtRange;
         fmtRange.chrg.cpMax = charTo;   //Indicate character from to character to 
         fmtRange.chrg.cpMin = charFrom;
-        fmtRange.hdc = (Windows.Win32.Graphics.Gdi.HDC)hdc; //Use the same DC for measuring and rendering
-        fmtRange.hdcTarget = (Windows.Win32.Graphics.Gdi.HDC)hdc;       //Point at printer hDC        
+        fmtRange.hdc = (HDC)hdc; //Use the same DC for measuring and rendering
+        fmtRange.hdcTarget = (HDC)hdc;       //Point at printer hDC        
         fmtRange.rc = rectToPrint;      //Indicate the area on page to print
         fmtRange.rcPage = rectPage;     //Indicate size of page
 
