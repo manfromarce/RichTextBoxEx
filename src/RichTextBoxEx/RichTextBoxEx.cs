@@ -899,7 +899,7 @@ public class RichTextBoxEx : RichTextBox
         set
         {
             // Control chars are not valid for bulleted lists.
-            if (value < 0x21 || (value > 0x7E && value < 0xA1))
+            if (value != '\0' &&  (value < 0x21 || (value > 0x7E && value < 0xA1)))
             {
                 throw new Exception("Invalid bullet char.");
             }
@@ -1528,13 +1528,11 @@ public class RichTextBoxEx : RichTextBox
     //    {
     //        unsafe
     //        {
-    //            var ptr = Marshal.StringToBSTR(math);
-    //            range.SetText((BSTR)ptr);
+    //            var ptr = (BSTR)Marshal.StringToBSTR(math).ToPointer();
+    //            range.SetText2(0, ptr);
+    //            PInvoke.SysFreeString(ptr);
     //        }
-    //        //range.GetFont2(out var font);
-    //        //font.SetMathZone((int)tomConstants.tomTrue);
-    //        //range.SetFont2(font);
-    //        range.BuildUpMath(0);
+    //        ((ITextRange2)range).BuildUpMath(0);
     //    }
     //}
 
